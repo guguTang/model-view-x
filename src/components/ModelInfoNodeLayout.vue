@@ -44,7 +44,7 @@
                             <span class="label" :style="{color: data.isMesh?'red':'black'}">{{ node.label }}</span>
                             <span @click.stop="">
                                 <a @click="locateNode(data)">
-                                    <el-icon :size="14"><i-home-open/></el-icon>
+                                    <el-icon :size="14"><i-home-fit/></el-icon>
                                 </a>
                                 <a style="margin-left: 8px" @click="showNode(data)">
                                     <el-icon :size="14">
@@ -197,7 +197,7 @@ export default defineComponent({
             });
         },
         locateNode(data: Tree) {
-            console.log(data);
+            TXEngine.FitNodeWithID(data.id);
         },
         filterNode(value: string, data: Tree) {
             if (!value) return true

@@ -17,11 +17,14 @@ import { defineComponent } from 'vue';
 import ModelInfoBasicLayout from './ModelInfoBasicLayout.vue';
 import ModelInfoNodeLayout from './ModelInfoNodeLayout.vue';
 import ModelInfoAnimationLayout from './ModelInfoAnimationLayout.vue';
+import ModelInfoMaterialLayout from './ModelInfoMaterialLayout.vue';
 import SettingLayout from './SettingLayout.vue';
 const itemInfo: Map<string, any> = new Map<string, any>();
 itemInfo.set('node', {title: '节点'});
-itemInfo.set('basic', {title: '基本信息'});
 itemInfo.set('animation', {title: '动画'});
+
+itemInfo.set('basic', {title: '基本信息'});
+itemInfo.set('material', {title: '材质'});
 itemInfo.set('setting', {title: '设置'});
 export default defineComponent({
     name: 'ModelInfoLayout',
@@ -53,11 +56,12 @@ export default defineComponent({
         ModelInfoBasicLayout,
         ModelInfoNodeLayout,
         ModelInfoAnimationLayout,
+        ModelInfoMaterialLayout,
         SettingLayout,
     },
     computed: {
         currentView() {
-            console.error(this.currentSelected);
+            // console.error(this.currentSelected);
             switch(this.currentSelected) {
                 case 'node': {
                     return 'ModelInfoNodeLayout';
@@ -75,7 +79,12 @@ export default defineComponent({
                     return 'ModelInfoAnimationLayout';
                     break;
                 }
+                case 'material': {
+                    return 'ModelInfoMaterialLayout';
+                    break;
+                }
                 default: {
+                    console.error(this.currentSelected);
                     return '';
                     break;
                 }

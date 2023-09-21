@@ -64,6 +64,8 @@ export abstract class Render {
     public abstract GetAnimationNames(): Array<string>;
     public abstract PlayAnimationWithName(name: string, isPlay: boolean, speed: number, type: AnimationPlayMode): void;
 
+    public abstract FitNodeWithID(nodeID: number): void;
+
     public abstract GetMaterialInfo(nodeID: number): IMaterialInfo | null;
     public abstract AutoRotate(mark: boolean): void;
     public abstract LoadFromUrl(url: string): Promise<boolean>;

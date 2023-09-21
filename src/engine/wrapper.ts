@@ -137,6 +137,10 @@ class TXEngineWrapper {
         this._renderer?.PlayAnimationWithName(name, isPlay, speed, type);
     }
 
+    public FitNodeWithID(nodeID: number): void  {
+        this._renderer?.FitNodeWithID(nodeID);
+    }
+
     public GetMaterialInfo(nodeID: number) {
         this._renderer?.GetMaterialInfo(nodeID);
     }

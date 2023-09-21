@@ -12,20 +12,23 @@
         </el-container> -->
 
         <el-row>
-            <el-col :span="24">
-                <div class="header">3D Model Viewer</div>
-            </el-col>
+            <div ref="rowHeader" style="width: 100vw">
+                <el-col :span="24">
+                    <div class="header">3D Model Viewer</div>
+                </el-col>
+            </div>
+            
         </el-row>
 
         <el-row>
-            <el-col :span="24">
-                <div class="tools">
-                    <ToolBar />
-                </div>
-            </el-col>
+            <div ref="rowTools" style="width: 100vw">
+                <el-col :span="24">
+                    <div class="tools"><ToolBar /></div>
+                </el-col>
+            </div>
         </el-row>
 
-        <el-row style="margin-top: 10px;">
+        <el-row>
             <el-col :span="24">
                 <!-- <el-aside width="200px" class="only_full_width" style="overflow: auto;float: left;" ref="leftLayout">
                     <LeftLayout />
@@ -68,6 +71,8 @@ const view3dLayout = ref<HTMLElement>();
 const view3dComp = ref<InstanceType <typeof View3D>>();
 const leftLayout = ref<HTMLElement>();
 const rightLayout = ref<HTMLElement>();
+const rowHeader = ref<HTMLElement>();
+const rowTools = ref<HTMLElement>();
 export default defineComponent({
     name: 'MainLayout',
     components: {
@@ -86,7 +91,13 @@ export default defineComponent({
             if (leftLayout.value && view3dLayout.value) {
                 const leftLayoutWidth: number = leftLayout.value?.clientWidth;
                 const rightLayoutWidth: number = rightLayout.value?.clientWidth!;
-                view3dLayout.value.style.width = `${window.innerWidth - leftLayoutWidth - rightLayoutWidth - 20}px`;
+                view3dLayout.value.style.width = `${window.innerWidth - leftLayoutWidth - rightLayoutWidth - 0}px`;
+
+                const headerHeight: number = rowHeader.value?.clientHeight!;
+                const toolsHeight: number = rowTools.value?.clientHeight!;
+                const diffHeight: number = headerHeight + toolsHeight;
+                // console.error(diffHeight);
+                view3dLayout.value.style.height = `calc(100vh - ${diffHeight}px)`;
                 // this.view3dWidth = `${window.innerWidth - leftLayout.value?.clientWidth -10}px`;
                 // console.log(this.view3dWidth);
             }
@@ -122,6 +133,8 @@ export default defineComponent({
             rightLayout,
             view3dLayout,
             view3dComp,
+            rowHeader,
+            rowTools,
         };
     },
 });

@@ -18,14 +18,14 @@
                         <el-icon :size="22"><i-home-animation /></el-icon>
                         <template #title>动画</template>
                     </el-menu-item>
-                    <el-menu-item index="material">
+                    <!-- <el-menu-item index="material">
                         <el-icon :size="22"><i-home-materials /></el-icon>
                         <template #title>材质</template>
-                    </el-menu-item>
-                    <el-menu-item index="2">
+                    </el-menu-item> -->
+                    <!-- <el-menu-item index="2">
                         <el-icon><setting /></el-icon>
                         <template #title>Navigator Four</template>
-                    </el-menu-item>
+                    </el-menu-item> -->
                 </el-menu>
             <!-- </el-col> -->
             <!-- <el-col :span="20"> -->

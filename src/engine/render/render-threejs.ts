@@ -293,6 +293,36 @@ export class RenderThreejs extends Render {
         }
     }
 
+    private setBestCameraWithNode(node: Object3D) {
+        const box = new Box3().setFromObject(node);
+        const size = box.getSize(new Vector3()).length();
+        const center = box.getCenter(new Vector3());
+
+        this._controls.reset();
+
+        // node.position.x += (node.position.x - center.x);
+        // node.position.y += (node.position.y - center.y);
+        // node.position.z += (node.position.z - center.z);
+
+        this._controls.maxDistance = size * 10;
+        this._defaultCamera.near = size / 100;
+        this._defaultCamera.far = size * 100;
+        this._defaultCamera.updateProjectionMatrix();
+        
+        this._defaultCamera.position.copy(center);
+        this._defaultCamera.position.x += size / 2.0;
+        this._defaultCamera.position.y += size / 5.0;
+        this._defaultCamera.position.z += size / 2.0;
+        this._defaultCamera.lookAt(center);
+
+        this._axesCamera.position.copy(this._defaultCamera.position);
+        this._axesCamera.lookAt(this._axesScene.position);
+        this._axesCamera.near = size / 100;
+        this._axesCamera.far = size * 100;
+        this._axesCamera.updateProjectionMatrix();
+        this._axesCorner.scale.set(size, size, size);
+    }
+
     private setContent(object: Group, clips: Array<AnimationClip>) {
         this.Clear();
         object.updateMatrixWorld();
@@ -528,6 +558,12 @@ export class RenderThreejs extends Render {
         }
     }
 
+    public FitNodeWithID(nodeID: number): void {
+        const node = this._content?.getObjectById(nodeID);
+        if (node) {
+            this.setBestCameraWithNode(node);
+        }
+    }
 
     public GetMaterialInfo(nodeID: number): IMaterialInfo | null {
         const node = this._content?.getObjectById(nodeID);

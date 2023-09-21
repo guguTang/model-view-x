@@ -16,6 +16,10 @@
                         <el-icon :size="22"><i-home-details /></el-icon>
                         <template #title>基本信息</template>
                     </el-menu-item>
+                    <el-menu-item index="material">
+                        <el-icon :size="22"><i-home-materials /></el-icon>
+                        <template #title>材质</template>
+                    </el-menu-item>
                     <el-menu-item index="setting">
                         <el-icon :size="22"><i-home-settings /></el-icon>
                         <template #title>设置</template>

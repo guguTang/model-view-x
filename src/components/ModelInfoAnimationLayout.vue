@@ -111,11 +111,13 @@ export default defineComponent({
                 return;
             }
             this.animations = [];
+            this.curAnimation = null;
             this.refreshInfo();
         },
         refreshInfo() {
             if (this.animations.length === 0) {
                 const names = TXEngine.GetAnimationNames();
+                console.warn(names);
                 this.animations = names.map(it => {
                     return {
                         name: it,
