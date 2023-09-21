@@ -30,26 +30,17 @@
 
         <el-row>
             <el-col :span="24">
-                <!-- <el-aside width="200px" class="only_full_width" style="overflow: auto;float: left;" ref="leftLayout">
-                    <LeftLayout />
-                </el-aside>
-                <el-main class="view3d" ref="view3dLayout">
-                    <View3D ref="view3dComp"/>
-
-                </el-main> -->
-            <!-- <el-col :span="4" class="only_full_width" style="overflow: auto"> -->
-                <div class="left-layout" ref="leftLayout">
-                    <LeftLayout />
+                <div class="main-body">
+                    <div class="left-layout" ref="leftLayout">
+                        <LeftLayout />
+                    </div>
+                    <div class="view3d" ref="view3dLayout">
+                        <View3D ref="view3dComp"/>
+                    </div>
+                    <div class="right-layout" ref="rightLayout">
+                        <RightLayout />
+                    </div>
                 </div>
-            <!-- </el-col> -->
-            <!-- <el-col :span="15"> -->
-                <div class="view3d" ref="view3dLayout">
-                    <View3D ref="view3dComp"/>
-                </div>
-                <div class="right-layout" ref="rightLayout">
-                    <RightLayout />
-                </div>
-            <!-- </el-col> -->
             </el-col>
         </el-row>
     </div>
@@ -118,7 +109,7 @@ export default defineComponent({
             await TXEngine.Load({
                 type: LoaderType.URL,
                 // url: 'http://127.0.0.1:8080/test-data/gltf/1/index.gltf',
-                url: 'https://model.3dmomoda.com/models/a86795d65e544341b4d3b6d0f46cffb7/0/gltf/index.gltf',
+                url: 'https://threejs.org/examples/models/gltf/AVIFTest/forest_house.glb',
             });
             // const myEvent = new Event('resize');
             // window.dispatchEvent(myEvent);
@@ -141,11 +132,24 @@ export default defineComponent({
 </script>
   
 <style lang="less" scoped>
+@header-height: 50px;
+@header-padding: 10px;
+@tools-height: 40px;
+@body-margin-top: 0px;
 .header {
     background-color: rgb(255, 255, 255);
     font-size: larger;
-    padding: 10px 0px;
+    padding: @header-padding 0px;
+    height: @header-height - @header-padding * 2;
     font-weight: 600;
+}
+
+.tools {
+    height: @tools-height;
+}
+
+.main-body {
+    height: calc(~"100vh - @{header-height} - @{header-padding} - @{tools-height} - @{body-margin-top}");
 }
 
 [name="footer"] {

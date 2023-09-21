@@ -67,9 +67,6 @@
                 </div>
             </el-tooltip>
         </div>
-        <!-- <SvgButton name="open" :size="btnSize" :selected="false"/>
-        <SvgButton name="open" :size="btnSize" :selected="false"/> -->
-
         <OpenFromURL ref="openFromURL"/>
         <OpenFromLocal ref="openFromLocal" />
     </div>
@@ -197,22 +194,22 @@ export default defineComponent({
 <style lang="less" scoped>
 .toolbar {
     background-color: #f5f5f5;
-    // height: 38px;
-    overflow: auto;
+    height: 100%;
+    // overflow: auto;
 }
 
 .toolbar .separator {
     background: #cccccc;
     width: 1px;
     height: 28px;
-    margin: 9px 8px;
+    margin: 7px 8px;
     float: left;
 }
 
 .button {
     float: left;
 	cursor: pointer;
-	padding: 10px;
+	padding: 11px 10px 5px 10px;;
 }
 
 .button:hover {

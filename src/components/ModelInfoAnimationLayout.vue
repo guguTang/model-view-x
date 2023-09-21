@@ -4,7 +4,7 @@
             <el-col :span="8">名称：</el-col>
             <el-col :span="16">
                 <el-select 
-                v-model="curAnimation"
+                v-model="curAnimationName"
                 @change="handleAnimationChange"
                 :clearable="true"
                 no-data-text="无动画"
@@ -14,7 +14,7 @@
                     v-for="item in animations"
                     :key="item.name"
                     :label="item.name"
-                    :value="item"
+                    :value="item.name"
                     />
                 </el-select>
             </el-col>
@@ -27,7 +27,7 @@
                     v-model="curAnimation.speed"
                     :min="1"
                     :max="10"
-                    precision="2"
+                    :precision="2"
                     :step="0.1"
                     @change="handleAnimationSpeedChange" />
                 </el-col>
@@ -83,7 +83,8 @@ export default defineComponent({
     name: 'ModelInfoAnimationLayout',
     data() {
         return {
-            curAnimation: null as AnimationState | null,
+            curAnimation: undefined as AnimationState | undefined,
+            curAnimationName: '',
             animations: [] as Array<AnimationState>,
             loopModeMap: [{
                 val: 'once',
@@ -111,7 +112,7 @@ export default defineComponent({
                 return;
             }
             this.animations = [];
-            this.curAnimation = null;
+            this.curAnimation = undefined;
             this.refreshInfo();
         },
         refreshInfo() {
@@ -128,8 +129,8 @@ export default defineComponent({
                 });
             }
         },
-        handleAnimationChange(val: AnimationState | null) {
-            console.error(val);
+        handleAnimationChange(val: string | null) {
+            this.curAnimation = this.animations.find(it => it.name === val);
         },
         handleAnimationLoopChange(val: AnimationPlayMode) {
             console.error(val);
