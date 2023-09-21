@@ -7,8 +7,6 @@ import {
     WebGLRenderer,
     PMREMGenerator,
     Texture,
-    LoadingManager,
-    REVISION,
     AnimationClip,
     Group,
     Box3,
@@ -19,9 +17,9 @@ import {
     DirectionalLight,
     Light,
     ToneMapping,
-    LinearToneMapping,
-    ACESFilmicToneMapping,
-    Camera,
+    // LinearToneMapping,
+    // ACESFilmicToneMapping,
+    // Camera,
     AxesHelper,
     GridHelper,
     BoxHelper,
@@ -35,18 +33,10 @@ import {
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { INodeSimpleInfo, IVector3, IMaterialInfo, AnimationPlayMode } from './info-struct';
+// import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { INodeSimpleInfo, IMaterialInfo, AnimationPlayMode } from './info-struct';
 import { factoryCreateLoaderForTHREE } from './loader/threejs-loader';
 import { LoaderType, LoaderOpts } from './loader/loader';
-
-const MANAGER: LoadingManager = new LoadingManager();
-const THREE_PATH = `https://unpkg.com/three@0.${REVISION}.x`
-const DRACO_LOADER = new DRACOLoader( MANAGER ).setDecoderPath( `${THREE_PATH}/examples/jsm/libs/draco/gltf/` );
-const KTX2_LOADER = new KTX2Loader( MANAGER ).setTranscoderPath( `${THREE_PATH}/examples/jsm/libs/basis/` );
 
 export class RenderThreejs extends Render {
     private _defaultCamera: PerspectiveCamera;
@@ -98,6 +88,7 @@ export class RenderThreejs extends Render {
         this._pmremGenerator.compileEquirectangularShader();
 
         this._neutralEnvironment = this._pmremGenerator.fromScene(new RoomEnvironment()).texture;
+        console.log(this._neutralEnvironment);
 
         this._controls = new OrbitControls(this._defaultCamera, this._renderer.domElement);
         this._controls.screenSpacePanning = true;
@@ -342,12 +333,14 @@ export class RenderThreejs extends Render {
         // @ts-ignore
         window.globalobj = object;
 
-        this._content.traverse((node: any) => {
-            if (node.isLight) {
+        this._content.traverse((node: Object3D) => {
+            const mesh = node as Mesh;
+            if ((node as Light).isLight) {
               this._config.punctualLights = false;
-            } else if (node.isMesh) {
+            } else if (mesh.isMesh) {
               // TODO(https://github.com/mrdoob/three.js/pull/18235): Clean up.
-            //   node.material.depthWrite = !node.material.transparent;
+              let materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+              materials.forEach(it => it.depthWrite = !it.transparent);
             }
         });
 
@@ -507,7 +500,7 @@ export class RenderThreejs extends Render {
         return this._clips.map(it => it.name);
     }
 
-    public PlayAnimationWithName(name: string, isPlay: boolean = true, type: AnimationPlayMode = 'once'): void {
+    public PlayAnimationWithName(name: string, isPlay: boolean = true, speed: number = 1, type: AnimationPlayMode = 'once'): void {
         const clip = this._clips.find(it => it.name === name);
         if (clip) {
             let loopType: THREE.AnimationActionLoopStyles = THREE.LoopOnce;
@@ -520,10 +513,16 @@ export class RenderThreejs extends Render {
             }
             const action = this._mixer?.clipAction(clip);
             if (action) {
+                action.reset();
                 if (isPlay) {
-                    action.reset().setLoop(loopType, 1).play();
+                    action.loop = loopType;
+                    action.timeScale = speed;
+                    if (action.isRunning()) {
+                        action.stop();
+                    }
+                    action.play();
                 } else {
-                    action.reset().stop();
+                    action.stop();
                 }
             }
         }

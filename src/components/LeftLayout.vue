@@ -11,15 +11,15 @@
                 @close="handleClose"
                 >
                     <el-menu-item index="node">
-                        <el-icon><svg-icon name="node" :size="22"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-node /></el-icon>
                         <template #title>节点</template>
                     </el-menu-item>
                     <el-menu-item index="animation">
-                        <el-icon><svg-icon name="animation" :size="22"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-animation /></el-icon>
                         <template #title>动画</template>
                     </el-menu-item>
                     <el-menu-item index="material">
-                        <el-icon><svg-icon name="materials" :size="22" color="red"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-materials /></el-icon>
                         <template #title>材质</template>
                     </el-menu-item>
                     <el-menu-item index="2">

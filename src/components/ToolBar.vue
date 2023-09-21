@@ -1,30 +1,34 @@
 <template>
     <div class="toolbar">
         <div @click="handleClickOpenFromLocal">
-            <SvgButton 
-            :name="btnOpenFromLocal.iconName" 
-            :size="btnSize" 
-            :tip="btnOpenFromLocal.name"
-            :selected="false"/>
+            <el-tooltip :content="btnOpenFromLocal.name" effect="light">
+                <div :class="btnOpenFromLocal.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div @click="handleClickOpenFromURL">
-            <SvgButton 
-            :name="btnOpenFromUrl.iconName" 
-            :size="btnSize" 
-            :tip="btnOpenFromUrl.name"
-            :selected="btnOpenFromUrl.selected"/>
+            <el-tooltip :content="btnOpenFromUrl.name" effect="light">
+                <div :class="btnOpenFromUrl.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-open_url/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div class="separator"></div>
-        <!-- <div @click="handleClickCoordinates">
-            <SvgButton name="coordinates" :size="btnSize" :selected="btnState.coordinates.selected" />
-        </div> -->
         <div v-for="(item) in btnViewAuxiliaryState" :key="item.name" @click="handleClickViewAuxiliary(item)">
-            <SvgButton 
-            :name="item.iconName" 
-            :size="btnSize" 
-            :selected="item.selected"
-            :tip="item.name"
-            />
+            <el-tooltip :content="item.name" effect="light">
+                <div :class="item.selected?'button selected':'button'">
+                    <el-icon v-if="item.iconName === 'coordinates'" :size="btnSize"><i-home-coordinates/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'autorotate'" :size="btnSize"><i-home-autorotate/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'wireframe'" :size="btnSize"><i-home-wireframe/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'boundbox'" :size="btnSize"><i-home-boundbox/></el-icon>
+                    <el-icon v-else :size="btnSize"><i-home-coordinates/></el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div class="separator"></div>
         <SvgButton name="open" :size="btnSize" :selected="false"/>
@@ -153,5 +157,19 @@ export default defineComponent({
     height: 28px;
     margin: 9px 8px;
     float: left;
+}
+
+.button {
+    float: left;
+	cursor: pointer;
+	padding: 10px;
+}
+
+.button:hover {
+    background: #c9e5f8;
+}
+
+.button.selected {
+    background: #e1e1e1;
 }
 </style>

@@ -106,7 +106,8 @@ export default defineComponent({
         this.$nextTick(async () => {
             await TXEngine.Load({
                 type: LoaderType.URL,
-                url: 'http://127.0.0.1:8080/test-data/gltf/1/index.gltf',
+                // url: 'http://127.0.0.1:8080/test-data/gltf/1/index.gltf',
+                url: 'https://model.3dmomoda.com/models/a86795d65e544341b4d3b6d0f46cffb7/0/gltf/index.gltf',
             });
             // const myEvent = new Event('resize');
             // window.dispatchEvent(myEvent);

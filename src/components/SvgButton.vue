@@ -1,8 +1,11 @@
 <template>
     <el-tooltip :content="tip" :effect="tooltipEffect">
         <div :class="selected?'button selected':'button'">
-            <svg-icon :name="name" :size="size">
-            </svg-icon>
+            <!-- <svg-icon :name="name" :size="size">
+            </svg-icon> -->
+            <el-icon :size="size" color="#234333">
+                <i-home-open_url/>
+            </el-icon>
         </div>
     </el-tooltip>
     
@@ -21,7 +24,6 @@ export default defineComponent({
     methods: {
     },
     mounted() {
-        
     },
     data() {
         return {

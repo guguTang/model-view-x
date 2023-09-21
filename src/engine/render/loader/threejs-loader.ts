@@ -6,7 +6,7 @@ import DataTransfer from '@/engine/data/transfer';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+// import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { Collada, ColladaLoader  } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
@@ -183,7 +183,11 @@ export class THREEFBXLoader extends THREELoader {
 
 // ===================GLTF Loader==============================
 const THREE_PATH = `https://unpkg.com/three@0.${REVISION}.x`
+// @ts-ignore
+// const OriginalVueWasm = import('@/vendor/threejs/${REVISION}/draco/gltf/');
+// import * as dracoPath from 'three/examples/jsm/libs/draco/gltf/'
 const DRACO_LOADER = new DRACOLoader(MANAGER).setDecoderPath(`${THREE_PATH}/examples/jsm/libs/draco/gltf/`);
+// const DRACO_LOADER = new DRACOLoader(MANAGER).setDecoderPath(OriginalVueWasm);
 const KTX2_LOADER = new KTX2Loader(MANAGER).setTranscoderPath(`${THREE_PATH}/examples/jsm/libs/basis/`);
 export class THREEGLTFLoader extends THREELoader {
     constructor(opts: LoaderOpts) {

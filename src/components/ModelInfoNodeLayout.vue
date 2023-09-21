@@ -3,10 +3,22 @@
         <el-row class="tools">
             <el-col :span="24">
                 <div class="item" @click="handleExpandTree">
-                    <SvgButton name="expand" :size="18" :selected="false" tip="展开"/>
+                    <el-tooltip content="展开" effect="light">
+                        <div class="button">
+                            <el-icon :size="18">
+                                <i-home-expand/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
                 </div>
                 <div class="item" @click="handleCollapseTree">
-                    <SvgButton name="collapse" :size="18" :selected="false" tip="收起"/>
+                    <el-tooltip content="收起" effect="light">
+                        <div class="button">
+                            <el-icon :size="18">
+                                <i-home-collapse/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
                 </div>
             </el-col>
         </el-row>
@@ -32,10 +44,13 @@
                             <span class="label" :style="{color: data.isMesh?'red':'black'}">{{ node.label }}</span>
                             <span @click.stop="">
                                 <a @click="locateNode(data)">
-                                    <svg-icon name="open" color="red" :size="14"/>
+                                    <el-icon :size="14"><i-home-open/></el-icon>
                                 </a>
                                 <a style="margin-left: 8px" @click="showNode(data)">
-                                    <svg-icon :name="data.visible?'visible':'hidden'" :size="14"/>
+                                    <el-icon :size="14">
+                                        <i-home-visible v-show="data.visible"/>
+                                        <i-home-hidden v-show="!data.visible"/>
+                                    </el-icon>
                                 </a>
                             </span>
                         </div>
@@ -248,5 +263,19 @@ export default defineComponent({
 .tools .item {
     // margin-top: 2px;
     // margin-bottom: 2px;
+}
+
+.button {
+    float: left;
+	cursor: pointer;
+	padding: 10px;
+}
+
+.button:hover {
+    background: #c9e5f8;
+}
+
+.button.selected {
+    background: #e1e1e1;
 }
 </style>

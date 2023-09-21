@@ -1,6 +1,6 @@
 import { EventType, GlobalBUS, IEventBandDataForSingleClickOnView3D } from './bus';
 import { DefaultRenderConfig, RenderConfig, RenderType } from './render/config';
-import { INodeSimpleInfo, INodeGeomertySimpleInfo, AnimationPlayMode } from './render/info-struct';
+import { INodeSimpleInfo, AnimationPlayMode } from './render/info-struct';
 import { Render } from './render/render';
 import { RenderThreejs } from './render/render-threejs';
 import { LoaderOpts } from '@/engine/render/loader/loader';
@@ -133,8 +133,8 @@ class TXEngineWrapper {
         return this._renderer?.GetAnimationNames() || [];
     }
 
-    public PlayAnimationWithName(name: string, isPlay: boolean, type: AnimationPlayMode = 'once'): void {
-        this._renderer?.PlayAnimationWithName(name, isPlay, type);
+    public PlayAnimationWithName(name: string, isPlay: boolean, speed: number = 1, type: AnimationPlayMode = 'once'): void {
+        this._renderer?.PlayAnimationWithName(name, isPlay, speed, type);
     }
 
     public GetMaterialInfo(nodeID: number) {

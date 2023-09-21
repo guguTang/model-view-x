@@ -85,7 +85,7 @@ export default defineComponent({
                     if (rv === false) {
                         ElMessage.error('加载模型失败!');
                     } else {
-                        TXEngine.Render?.PlayAllAnimation();
+                        // TXEngine.Render?.PlayAllAnimation();
                     }
                 } else {
                     ElMessage.error('URL不能为空!');
@@ -115,7 +115,7 @@ export default defineComponent({
                     if (rv === false) {
                         ElMessage.error('加载模型失败!');
                     } else {
-                        TXEngine.Render?.PlayAllAnimation();
+                        // TXEngine.Render?.PlayAllAnimation();
                     }
                 } else {
                     ElMessage.error('加载模型失败，没有文件!');

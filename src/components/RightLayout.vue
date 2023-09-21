@@ -13,11 +13,11 @@
                 @close="handleClose"
                 >
                     <el-menu-item index="basic">
-                        <el-icon><svg-icon name="details" :size="22"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-details /></el-icon>
                         <template #title>基本信息</template>
                     </el-menu-item>
                     <el-menu-item index="setting">
-                        <el-icon><svg-icon name="settings" :size="22" color="red"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-settings /></el-icon>
                         <template #title>设置</template>
                     </el-menu-item>
                 </el-menu>
