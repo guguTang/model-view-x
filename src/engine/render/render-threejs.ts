@@ -192,14 +192,17 @@ export class RenderThreejs extends Render {
     }
 
     private addLights() {
+        // 环境关
         const light1  = new AmbientLight(this._config.ambientColor, this._config.ambientIntensity);
         light1.name = 'ambient_light';
         this._defaultCamera.add(light1);
+        
 
+        // 方向光
         const light2  = new DirectionalLight(this._config.directColor, this._config.directIntensity);
         light2.position.set(0.5, 0, 0.866); // ~60º
         light2.name = 'main_light';
-        this._defaultCamera.add( light2 );
+        this._defaultCamera.add(light2);
 
         this._lights.push(light1, light2);
     }

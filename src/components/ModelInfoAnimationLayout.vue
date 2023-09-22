@@ -113,6 +113,7 @@ export default defineComponent({
             }
             this.animations = [];
             this.curAnimation = undefined;
+            this.curAnimationName = '';
             this.refreshInfo();
         },
         refreshInfo() {

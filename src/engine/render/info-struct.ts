@@ -10,6 +10,10 @@ export declare interface IMaterialInfo {
 };
 
 export type AnimationPlayMode = 'once' | 'reverse' | 'repeat' | 'pingpong';
+export declare interface ILight {
+    color: string;
+    intensity: number;
+}
 
 export declare interface INodeSimpleInfo {
     id: number;

@@ -69,7 +69,7 @@ export default defineComponent({
     }
 });
 </script>
-<style>
+<style lang="less" scoped>
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 800px;
@@ -78,5 +78,6 @@ export default defineComponent({
 .info-layout {
     margin-left: 10px;
     margin-right: 6px;
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 </style>
