@@ -1,35 +1,34 @@
 <template>
     <div>
         <el-row>
-                <div v-show="activeIndex !== ''" style="margin-left: 10px; margin-right: 10px;">
-                    <ModelInfoLayout width="230px" :selected="activeIndex" ref="modelInfoLayout"/>
-                </div>
-                <el-menu
-                :default-active="activeIndex"
-                class="el-menu-vertical-demo"
-                :collapse="isCollapse"
-                @select="handleSelect"
-                @open="handleOpen"
-                @close="handleClose"
-                >
-                    <el-menu-item index="basic">
-                        <el-icon :size="22"><i-home-details /></el-icon>
-                        <template #title>基本信息</template>
-                    </el-menu-item>
-                    <el-menu-item index="material">
-                        <el-icon :size="22"><i-home-materials /></el-icon>
-                        <template #title>材质</template>
-                    </el-menu-item>
-                    <el-menu-item index="setting">
-                        <el-icon :size="22"><i-home-settings /></el-icon>
-                        <template #title>设置</template>
-                    </el-menu-item>
-                </el-menu>
-            <!-- </el-col> -->
-            <!-- <el-col :span="20"> -->
-                <!-- <div style="width: 230px;">sdfsdfds</div> -->
-                
-            <!-- </el-col> -->
+            <div v-show="activeIndex !== ''" class="info-layout">
+                <ModelInfoLayout width="230px" :selected="activeIndex" ref="modelInfoLayout"/>
+            </div>
+            <el-menu
+            :default-active="activeIndex"
+            class="el-menu-vertical-demo"
+            :collapse="isCollapse"
+            @select="handleSelect"
+            @open="handleOpen"
+            @close="handleClose"
+            >
+                <el-menu-item index="basic">
+                    <el-icon :size="22"><i-home-details /></el-icon>
+                    <template #title>基本信息</template>
+                </el-menu-item>
+                <el-menu-item index="material">
+                    <el-icon :size="22"><i-home-materials /></el-icon>
+                    <template #title>材质</template>
+                </el-menu-item>
+                <el-menu-item index="light">
+                    <el-icon :size="22"><i-home-light_mode /></el-icon>
+                    <template #title>灯光</template>
+                </el-menu-item>
+                <el-menu-item index="setting">
+                    <el-icon :size="22"><i-home-settings /></el-icon>
+                    <template #title>设置</template>
+                </el-menu-item>
+            </el-menu>
         </el-row>
         
     </div>
@@ -65,7 +64,7 @@ export default defineComponent({
     }
 });
 </script>
-<style scoped>
+<style lang="less" scoped>
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 800px;
@@ -74,5 +73,11 @@ export default defineComponent({
 .el-menu {
     border-left: solid 1px var(--el-menu-border-color);
     border-right: none;
+}
+
+.info-layout {
+    margin-left: 10px;
+    margin-right: 10px;
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 </style>

@@ -1,4 +1,3 @@
-
 <template>
     <div class="">
         <!-- <el-container>
@@ -132,24 +131,20 @@ export default defineComponent({
 </script>
   
 <style lang="less" scoped>
-@header-height: 50px;
-@header-padding: 10px;
-@tools-height: 40px;
-@body-margin-top: 0px;
 .header {
     background-color: rgb(255, 255, 255);
     font-size: larger;
-    padding: @header-padding 0px;
-    height: @header-height - @header-padding * 2;
+    padding: @tx-header-padding 0px;
+    height: @tx-header-height - @tx-header-padding * 2;
     font-weight: 600;
 }
 
 .tools {
-    height: @tools-height;
+    height: @tx-tools-height;
 }
 
 .main-body {
-    height: calc(~"100vh - @{header-height} - @{header-padding} - @{tools-height} - @{body-margin-top}");
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 
 [name="footer"] {

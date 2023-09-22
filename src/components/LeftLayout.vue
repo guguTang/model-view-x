@@ -30,7 +30,7 @@
             <!-- </el-col> -->
             <!-- <el-col :span="20"> -->
                 <!-- <div style="width: 230px;">sdfsdfds</div> -->
-                <div v-show="activeIndex !== ''" style="margin-left: 10px;margin-right: 6px;">
+                <div v-show="activeIndex !== ''" class="info-layout">
                     <ModelInfoLayout width="230px" :selected="activeIndex" ref="modelInfoLayout"/>
                 </div>
             <!-- </el-col> -->
@@ -73,5 +73,10 @@ export default defineComponent({
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 800px;
+}
+
+.info-layout {
+    margin-left: 10px;
+    margin-right: 6px;
 }
 </style>
