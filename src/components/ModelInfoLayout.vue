@@ -1,5 +1,5 @@
 <template>
-    <div :style="{width: width}">
+    <div :style="{width: width}" class="model-info-content">
         <span class="title">
             {{ currentTitle }}
         </span>
@@ -17,11 +17,16 @@ import { defineComponent } from 'vue';
 import ModelInfoBasicLayout from './ModelInfoBasicLayout.vue';
 import ModelInfoNodeLayout from './ModelInfoNodeLayout.vue';
 import ModelInfoAnimationLayout from './ModelInfoAnimationLayout.vue';
+import ModelInfoMaterialLayout from './ModelInfoMaterialLayout.vue';
+import LightLayout from './LightLayout.vue';
 import SettingLayout from './SettingLayout.vue';
 const itemInfo: Map<string, any> = new Map<string, any>();
 itemInfo.set('node', {title: '节点'});
-itemInfo.set('basic', {title: '基本信息'});
 itemInfo.set('animation', {title: '动画'});
+
+itemInfo.set('basic', {title: '基本信息'});
+itemInfo.set('light', {title: '灯光'});
+itemInfo.set('material', {title: '材质'});
 itemInfo.set('setting', {title: '设置'});
 export default defineComponent({
     name: 'ModelInfoLayout',
@@ -53,31 +58,35 @@ export default defineComponent({
         ModelInfoBasicLayout,
         ModelInfoNodeLayout,
         ModelInfoAnimationLayout,
+        ModelInfoMaterialLayout,
         SettingLayout,
+        LightLayout,
     },
     computed: {
         currentView() {
-            console.error(this.currentSelected);
+            // console.error(this.currentSelected);
             switch(this.currentSelected) {
                 case 'node': {
                     return 'ModelInfoNodeLayout';
-                    break;
                 }
                 case 'basic': {
                     return 'ModelInfoBasicLayout';
-                    break;
                 }
                 case 'setting': {
                     return 'SettingLayout';
-                    break;
                 }
                 case 'animation': {
                     return 'ModelInfoAnimationLayout';
-                    break;
+                }
+                case 'material': {
+                    return 'ModelInfoMaterialLayout';
+                }
+                case 'light': {
+                    return 'LightLayout';
                 }
                 default: {
+                    console.error(this.currentSelected);
                     return '';
-                    break;
                 }
             }
         },
@@ -104,7 +113,11 @@ export default defineComponent({
     display: block;
 }
 
-// .content {
-//     margin-top: 0px;
-// }
+.model-info-content {
+    height: 100%;
+}
+
+.content {
+    height: 100% - 20px;
+}
 </style>

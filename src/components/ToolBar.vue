@@ -1,52 +1,98 @@
 <template>
     <div class="toolbar">
         <div @click="handleClickOpenFromLocal">
-            <SvgButton 
-            :name="btnOpenFromLocal.iconName" 
-            :size="btnSize" 
-            :tip="btnOpenFromLocal.name"
-            :selected="false"/>
+            <el-tooltip :content="btnOpenFromLocal.name" effect="light">
+                <div :class="btnOpenFromLocal.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div @click="handleClickOpenFromURL">
-            <SvgButton 
-            :name="btnOpenFromUrl.iconName" 
-            :size="btnSize" 
-            :tip="btnOpenFromUrl.name"
-            :selected="btnOpenFromUrl.selected"/>
+            <el-tooltip :content="btnOpenFromUrl.name" effect="light">
+                <div :class="btnOpenFromUrl.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-open_url/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
+        <div @click="handleClickOpenFromUinoModelID">
+            <el-tooltip :content="btnOpenFromUrl.name" effect="light">
+                <div :class="btnOpenFromUrl.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-feedback/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div class="separator"></div>
-        <!-- <div @click="handleClickCoordinates">
-            <SvgButton name="coordinates" :size="btnSize" :selected="btnState.coordinates.selected" />
-        </div> -->
         <div v-for="(item) in btnViewAuxiliaryState" :key="item.name" @click="handleClickViewAuxiliary(item)">
-            <SvgButton 
-            :name="item.iconName" 
-            :size="btnSize" 
-            :selected="item.selected"
-            :tip="item.name"
-            />
+            <el-tooltip :content="item.name" effect="light">
+                <div :class="item.selected?'button selected':'button'">
+                    <el-icon v-if="item.iconName === 'coordinates'" :size="btnSize"><i-home-coordinates/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'autorotate'" :size="btnSize"><i-home-autorotate/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'wireframe'" :size="btnSize"><i-home-wireframe/></el-icon>
+                    <el-icon v-else-if="item.iconName === 'boundbox'" :size="btnSize"><i-home-boundbox/></el-icon>
+                    <el-icon v-else :size="btnSize"><i-home-coordinates/></el-icon>
+                </div>
+            </el-tooltip>
         </div>
         <div class="separator"></div>
-        <SvgButton name="open" :size="btnSize" :selected="false"/>
-        <SvgButton name="open" :size="btnSize" :selected="false"/>
-
-        <OpenFromURL ref="openFromURL"/>
+        <div @click="testOpenGltf('gltf')">
+            <el-tooltip content="gltf" effect="light">
+                <div class="button">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
+        <div @click="testOpenGltf('obj')">
+            <el-tooltip content="obj" effect="light">
+                <div class="button">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
+        <div @click="testOpenGltf('fbx')">
+            <el-tooltip content="fbx" effect="light">
+                <div class="button">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
+        <div @click="testOpenGltf('dae')">
+            <el-tooltip content="dae" effect="light">
+                <div class="button">
+                    <el-icon :size="btnSize">
+                        <i-home-open/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
+        <OpenFromURL ref="openFromURL" />
         <OpenFromLocal ref="openFromLocal" />
     </div>
 </template>
 <script lang="ts">
-import { ElCol, ElRow } from 'element-plus';
+import { ElCol, ElRow, ElMessageBox, ElMessage } from 'element-plus';
 import OpenFromURL from './dialog/OpenFromURL.vue';
 import OpenFromLocal from './dialog/OpenFromLocal.vue';
-import SvgButton from './SvgButton.vue';
 import { defineComponent, ref } from "vue";
 import { EventType, GlobalBUS, IEventBandDataForButton, ViewAuxiliaryType } from '../engine/bus';
+import { LoaderType } from '@/engine/render/loader/loader';
+import { TXEngine } from '@/engine/wrapper';
 const openFromURL = ref<InstanceType<typeof OpenFromURL> | null>(null);
 const openFromLocal = ref<InstanceType<typeof OpenFromLocal> | null>(null);
 export default defineComponent({
     name: 'ToolBar',
     components: {
-        SvgButton,
         ElCol, ElRow
     },
     data() {
@@ -95,6 +141,52 @@ export default defineComponent({
         GlobalBUS.On(EventType.ButtonChangeCallback, this.handleCallback);
     },
     methods: {
+        async testOpenGltf(str: string) {
+            const modelMap = new Map<string, string>();
+            modelMap.set('fbx', 'https://threejs.org/examples/models/fbx/Samba%20Dancing.fbx');
+            modelMap.set('gltf', 'https://threejs.org/examples/models/gltf/IridescentDishWithOlives.glb');
+            modelMap.set('obj', 'https://threejs.org/examples/models/obj/male02/male02.obj');
+            modelMap.set('dae', 'https://threejs.org/examples/models/collada/abb_irb52_7_120.dae');
+            const uri = modelMap.get(str);
+            if (uri) {
+                await TXEngine.Load({
+                    type: LoaderType.URL,
+                    url: uri,
+                });
+            }
+        },
+        handleClickOpenFromUinoModelID() {
+            ElMessageBox.prompt('请输入模型ID', '模型ID', {
+                confirmButtonText: '加载',
+                cancelButtonText: '关闭',
+                // inputPattern:/[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: 'Invalid Email',
+            }).then(async ({value}) => {
+                const response: Response = await fetch(`https://model.3dmomoda.com/models/${value}/0/gltf/index.json`);
+                if (response.status == 404) {
+                    ElMessage({
+                        type: 'error',
+                        message: `加载失败:资源不存在`,
+                    })
+                } else if (response.status == 200) {
+                    const jsonData = await response.json();
+                    console.log(jsonData);
+                    if (jsonData.gltfFiles?.length > 0) {
+                        const entryFile = jsonData.gltfFiles[0];
+                        GlobalBUS.Emit(EventType.OpenFromUrl, {
+                            id: '',
+                            name: '',
+                            value: `https://model.3dmomoda.com/models/${value}/0/gltf/${entryFile}`,
+                        });
+                    }
+                }
+            }).catch(() => {
+                // ElMessage({
+                //     type: 'info',
+                //     message: 'Input canceled',
+                // })
+            });
+        },
         handleClickOpenFromURL() {
             // console.log(openFromURL.value);
             openFromURL.value?.show(true);
@@ -143,15 +235,29 @@ export default defineComponent({
 <style lang="less" scoped>
 .toolbar {
     background-color: #f5f5f5;
-    // height: 38px;
-    overflow: auto;
+    height: 100%;
+    // overflow: auto;
 }
 
 .toolbar .separator {
     background: #cccccc;
     width: 1px;
     height: 28px;
-    margin: 9px 8px;
+    margin: 7px 8px;
     float: left;
+}
+
+.button {
+    float: left;
+	cursor: pointer;
+	padding: 11px 10px 5px 10px;;
+}
+
+.button:hover {
+    background: #c9e5f8;
+}
+
+.button.selected {
+    background: #e1e1e1;
 }
 </style>

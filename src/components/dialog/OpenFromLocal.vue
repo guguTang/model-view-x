@@ -31,8 +31,10 @@ export default defineComponent({
             if (fileList.length > 0) {
                 if (fileList.length === 1) {
                     const fileZip = fileList[0];
-                    if (fileZip.type === 'application/x-zip-compressed') {
+                    if (fileZip.type === 'application/x-zip-compressed' || fileZip.type === 'application/zip') {
                         folderIns = new FolderZip(fileZip);
+                    } else {
+                        folderIns = new FolderLocal(fileList);
                     }
                 } else {
                     folderIns = new FolderLocal(fileList);

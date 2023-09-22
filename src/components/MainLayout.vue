@@ -1,4 +1,3 @@
-
 <template>
     <div class="">
         <!-- <el-container>
@@ -12,41 +11,35 @@
         </el-container> -->
 
         <el-row>
-            <el-col :span="24">
-                <div class="header">3D Model Viewer</div>
-            </el-col>
+            <div ref="rowHeader" style="width: 100vw">
+                <el-col :span="24">
+                    <div class="header">3D Model Viewer</div>
+                </el-col>
+            </div>
+            
+        </el-row>
+
+        <el-row>
+            <div ref="rowTools" style="width: 100vw">
+                <el-col :span="24">
+                    <div class="tools"><ToolBar /></div>
+                </el-col>
+            </div>
         </el-row>
 
         <el-row>
             <el-col :span="24">
-                <div class="tools">
-                    <ToolBar />
+                <div class="main-body">
+                    <div class="left-layout" ref="leftLayout">
+                        <LeftLayout />
+                    </div>
+                    <div class="view3d" ref="view3dLayout">
+                        <View3D ref="view3dComp"/>
+                    </div>
+                    <div class="right-layout" ref="rightLayout">
+                        <RightLayout />
+                    </div>
                 </div>
-            </el-col>
-        </el-row>
-
-        <el-row style="margin-top: 10px;">
-            <el-col :span="24">
-                <!-- <el-aside width="200px" class="only_full_width" style="overflow: auto;float: left;" ref="leftLayout">
-                    <LeftLayout />
-                </el-aside>
-                <el-main class="view3d" ref="view3dLayout">
-                    <View3D ref="view3dComp"/>
-
-                </el-main> -->
-            <!-- <el-col :span="4" class="only_full_width" style="overflow: auto"> -->
-                <div class="left-layout" ref="leftLayout">
-                    <LeftLayout />
-                </div>
-            <!-- </el-col> -->
-            <!-- <el-col :span="15"> -->
-                <div class="view3d" ref="view3dLayout">
-                    <View3D ref="view3dComp"/>
-                </div>
-                <div class="right-layout" ref="rightLayout">
-                    <RightLayout />
-                </div>
-            <!-- </el-col> -->
             </el-col>
         </el-row>
     </div>
@@ -68,6 +61,8 @@ const view3dLayout = ref<HTMLElement>();
 const view3dComp = ref<InstanceType <typeof View3D>>();
 const leftLayout = ref<HTMLElement>();
 const rightLayout = ref<HTMLElement>();
+const rowHeader = ref<HTMLElement>();
+const rowTools = ref<HTMLElement>();
 export default defineComponent({
     name: 'MainLayout',
     components: {
@@ -86,7 +81,13 @@ export default defineComponent({
             if (leftLayout.value && view3dLayout.value) {
                 const leftLayoutWidth: number = leftLayout.value?.clientWidth;
                 const rightLayoutWidth: number = rightLayout.value?.clientWidth!;
-                view3dLayout.value.style.width = `${window.innerWidth - leftLayoutWidth - rightLayoutWidth - 20}px`;
+                view3dLayout.value.style.width = `${window.innerWidth - leftLayoutWidth - rightLayoutWidth - 0}px`;
+
+                const headerHeight: number = rowHeader.value?.clientHeight!;
+                const toolsHeight: number = rowTools.value?.clientHeight!;
+                const diffHeight: number = headerHeight + toolsHeight;
+                // console.error(diffHeight);
+                view3dLayout.value.style.height = `calc(100vh - ${diffHeight}px)`;
                 // this.view3dWidth = `${window.innerWidth - leftLayout.value?.clientWidth -10}px`;
                 // console.log(this.view3dWidth);
             }
@@ -106,7 +107,8 @@ export default defineComponent({
         this.$nextTick(async () => {
             await TXEngine.Load({
                 type: LoaderType.URL,
-                url: 'http://127.0.0.1:8080/test-data/gltf/1/index.gltf',
+                // url: 'http://127.0.0.1:8080/test-data/gltf/1/index.gltf',
+                url: 'https://threejs.org/examples/models/gltf/AVIFTest/forest_house.glb',
             });
             // const myEvent = new Event('resize');
             // window.dispatchEvent(myEvent);
@@ -121,6 +123,8 @@ export default defineComponent({
             rightLayout,
             view3dLayout,
             view3dComp,
+            rowHeader,
+            rowTools,
         };
     },
 });
@@ -130,8 +134,17 @@ export default defineComponent({
 .header {
     background-color: rgb(255, 255, 255);
     font-size: larger;
-    padding: 10px 0px;
+    padding: @tx-header-padding 0px;
+    height: @tx-header-height - @tx-header-padding * 2;
     font-weight: 600;
+}
+
+.tools {
+    height: @tx-tools-height;
+}
+
+.main-body {
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 
 [name="footer"] {

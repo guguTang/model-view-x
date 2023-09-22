@@ -44,10 +44,6 @@ export abstract class Render {
         recursion(this._nodeTree);
     }
 
-    public GetNodeGeomertySimpleInfo(nodeID: number | null) {
-
-    }
-
     public get CurrentSelectedNodeInfo(): INodeSimpleInfo | null {
         if (this._selectedNodeInfo.length > 0) {
             return this._selectedNodeInfo[0];
@@ -66,7 +62,9 @@ export abstract class Render {
     public abstract IsDoubleSide(): boolean;
 
     public abstract GetAnimationNames(): Array<string>;
-    public abstract PlayAnimationWithName(name: string, isPlay: boolean, type: AnimationPlayMode): void;
+    public abstract PlayAnimationWithName(name: string, isPlay: boolean, speed: number, type: AnimationPlayMode): void;
+
+    public abstract FitNodeWithID(nodeID: number): void;
 
     public abstract GetMaterialInfo(nodeID: number): IMaterialInfo | null;
     public abstract AutoRotate(mark: boolean): void;

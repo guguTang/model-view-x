@@ -85,7 +85,7 @@ export default defineComponent({
                     if (rv === false) {
                         ElMessage.error('加载模型失败!');
                     } else {
-                        TXEngine.Render?.PlayAllAnimation();
+                        // TXEngine.Render?.PlayAllAnimation();
                     }
                 } else {
                     ElMessage.error('URL不能为空!');
@@ -115,7 +115,7 @@ export default defineComponent({
                     if (rv === false) {
                         ElMessage.error('加载模型失败!');
                     } else {
-                        TXEngine.Render?.PlayAllAnimation();
+                        // TXEngine.Render?.PlayAllAnimation();
                     }
                 } else {
                     ElMessage.error('加载模型失败，没有文件!');
@@ -140,16 +140,12 @@ export default defineComponent({
 <style lang="less" scoped>
 .view {
     position: relative;
-    // height: 60%;
+    height: 100%;
 }
 
 .container {
     width: 100%;
-    height: 80vh;
-    // position: relative;
-    // position: absolute;
-    // left: 0;
-    // top: 0;
+    height: 100%;
 }
 
 .axes {

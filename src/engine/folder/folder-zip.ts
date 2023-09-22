@@ -1,8 +1,8 @@
 import Folder from './folder';
 import { guessModelFileTypeWithFileName, ModelType } from './file';
 import * as JSZip from 'jszip';
-import DataTransfer from '@/engine/data/transfer';
-import { fileTypeFromStream, fileTypeFromBuffer} from 'file-type';
+// import DataTransfer from '@/engine/data/transfer';
+// import { fileTypeFromStream, fileTypeFromBuffer} from 'file-type';
 export default class FolderZip extends Folder {
     private _origin: File;
     constructor(file: File) {

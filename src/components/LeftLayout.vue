@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%;">
         <el-row>
             <!-- <el-col :span="4"> -->
                 <el-menu
@@ -11,26 +11,26 @@
                 @close="handleClose"
                 >
                     <el-menu-item index="node">
-                        <el-icon><svg-icon name="node" :size="22"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-node /></el-icon>
                         <template #title>节点</template>
                     </el-menu-item>
                     <el-menu-item index="animation">
-                        <el-icon><svg-icon name="animation" :size="22"></svg-icon></el-icon>
+                        <el-icon :size="22"><i-home-animation /></el-icon>
                         <template #title>动画</template>
                     </el-menu-item>
-                    <el-menu-item index="material">
-                        <el-icon><svg-icon name="materials" :size="22" color="red"></svg-icon></el-icon>
+                    <!-- <el-menu-item index="material">
+                        <el-icon :size="22"><i-home-materials /></el-icon>
                         <template #title>材质</template>
-                    </el-menu-item>
-                    <el-menu-item index="2">
+                    </el-menu-item> -->
+                    <!-- <el-menu-item index="2">
                         <el-icon><setting /></el-icon>
                         <template #title>Navigator Four</template>
-                    </el-menu-item>
+                    </el-menu-item> -->
                 </el-menu>
             <!-- </el-col> -->
             <!-- <el-col :span="20"> -->
                 <!-- <div style="width: 230px;">sdfsdfds</div> -->
-                <div v-show="activeIndex !== ''" style="margin-left: 10px;margin-right: 6px;">
+                <div v-show="activeIndex !== ''" class="info-layout">
                     <ModelInfoLayout width="230px" :selected="activeIndex" ref="modelInfoLayout"/>
                 </div>
             <!-- </el-col> -->
@@ -69,9 +69,15 @@ export default defineComponent({
     }
 });
 </script>
-<style>
+<style lang="less" scoped>
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 800px;
+}
+
+.info-layout {
+    margin-left: 10px;
+    margin-right: 6px;
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 </style>
