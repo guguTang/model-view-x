@@ -38,6 +38,7 @@ declare module 'vue' {
     IHomeCoordinates: typeof import('~icons/home/coordinates')['default']
     IHomeDetails: typeof import('~icons/home/details')['default']
     IHomeExpand: typeof import('~icons/home/expand')['default']
+    IHomeFeedback: typeof import('~icons/home/feedback')['default']
     IHomeFit: typeof import('~icons/home/fit')['default']
     IHomeHidden: typeof import('~icons/home/hidden')['default']
     IHomeLight_mode: typeof import('~icons/home/light_mode')['default']

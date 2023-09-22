@@ -18,6 +18,15 @@
                 </div>
             </el-tooltip>
         </div>
+        <div @click="handleClickOpenFromUinoModelID">
+            <el-tooltip :content="btnOpenFromUrl.name" effect="light">
+                <div :class="btnOpenFromUrl.selected?'button selected':'button'">
+                    <el-icon :size="btnSize">
+                        <i-home-feedback/>
+                    </el-icon>
+                </div>
+            </el-tooltip>
+        </div>
         <div class="separator"></div>
         <div v-for="(item) in btnViewAuxiliaryState" :key="item.name" @click="handleClickViewAuxiliary(item)">
             <el-tooltip :content="item.name" effect="light">
@@ -67,12 +76,12 @@
                 </div>
             </el-tooltip>
         </div>
-        <OpenFromURL ref="openFromURL"/>
+        <OpenFromURL ref="openFromURL" />
         <OpenFromLocal ref="openFromLocal" />
     </div>
 </template>
 <script lang="ts">
-import { ElCol, ElRow } from 'element-plus';
+import { ElCol, ElRow, ElMessageBox, ElMessage } from 'element-plus';
 import OpenFromURL from './dialog/OpenFromURL.vue';
 import OpenFromLocal from './dialog/OpenFromLocal.vue';
 import { defineComponent, ref } from "vue";
@@ -145,6 +154,38 @@ export default defineComponent({
                     url: uri,
                 });
             }
+        },
+        handleClickOpenFromUinoModelID() {
+            ElMessageBox.prompt('请输入模型ID', '模型ID', {
+                confirmButtonText: '加载',
+                cancelButtonText: '关闭',
+                // inputPattern:/[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                // inputErrorMessage: 'Invalid Email',
+            }).then(async ({value}) => {
+                const response: Response = await fetch(`https://model.3dmomoda.com/models/${value}/0/gltf/index.json`);
+                if (response.status == 404) {
+                    ElMessage({
+                        type: 'error',
+                        message: `加载失败:资源不存在`,
+                    })
+                } else if (response.status == 200) {
+                    const jsonData = await response.json();
+                    console.log(jsonData);
+                    if (jsonData.gltfFiles?.length > 0) {
+                        const entryFile = jsonData.gltfFiles[0];
+                        GlobalBUS.Emit(EventType.OpenFromUrl, {
+                            id: '',
+                            name: '',
+                            value: `https://model.3dmomoda.com/models/${value}/0/gltf/${entryFile}`,
+                        });
+                    }
+                }
+            }).catch(() => {
+                // ElMessage({
+                //     type: 'info',
+                //     message: 'Input canceled',
+                // })
+            });
         },
         handleClickOpenFromURL() {
             // console.log(openFromURL.value);
