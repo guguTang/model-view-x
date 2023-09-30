@@ -1,6 +1,6 @@
 import { EventType, GlobalBUS, IEventBandDataForSingleClickOnView3D } from './bus';
 import { DefaultRenderConfig, RenderConfig, RenderType } from './render/config';
-import { INodeSimpleInfo, AnimationPlayMode } from './render/info-struct';
+import { INodeSimpleInfo, AnimationPlayMode, ILight, EnvironmentType } from './render/info-struct';
 import { Render } from './render/render';
 import { RenderThreejs } from './render/render-threejs';
 import { LoaderOpts } from '@/engine/render/loader/loader';
@@ -121,6 +121,20 @@ class TXEngineWrapper {
         return this._renderer?.GetBackgroundColor();
     }
 
+    public GetEnvironment(): EnvironmentType {
+        if (!this._renderer) {
+            return 'none';
+        }
+        return this._renderer.GetEnvironment();
+    }
+
+    public async SetEnvironment(type: EnvironmentType): Promise<boolean> {
+        if (!this._renderer) {
+            return false;
+        }
+        return this._renderer?.SetEnvironment(type);
+    }
+
     public SetDoubleSide(mark: boolean): void {
         this._renderer?.SetDoubleSide(mark);
     }
@@ -143,6 +157,18 @@ class TXEngineWrapper {
 
     public GetMaterialInfo(nodeID: number) {
         this._renderer?.GetMaterialInfo(nodeID);
+    }
+
+    public UpdateLight(light: ILight): void {
+        this._renderer?.UpdateLight(light);
+    }
+
+    public ShowGrid(mark: boolean): void {
+        this._renderer?.ShowGrid(mark);
+    }
+
+    public IsGridShow(): boolean {
+        return !!this._renderer?.IsGridShow();
     }
 };
 

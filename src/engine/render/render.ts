@@ -1,5 +1,5 @@
 import { DefaultRenderConfig, RenderConfig } from './config';
-import { INodeSimpleInfo, IMaterialInfo, AnimationPlayMode } from './info-struct';
+import { INodeSimpleInfo, IMaterialInfo, AnimationPlayMode, ILight, EnvironmentType } from './info-struct';
 import { DefaultRenderState, RenderState } from './state';
 import { LoaderOpts } from './loader/loader';
 export type singleClickCallback = (objectID: number | null) => boolean;
@@ -17,7 +17,7 @@ export abstract class Render {
         this._el = el;
         this._axesEl = axesel;
         this._config = opts;
-        this._state = JSON.parse(JSON.stringify(DefaultRenderState));
+        this._state = DefaultRenderState; //JSON.parse(JSON.stringify(DefaultRenderState));
     }
 
     public get NodeSimpleTree(): Array<INodeSimpleInfo> {
@@ -55,6 +55,8 @@ export abstract class Render {
     public abstract HasContent(): boolean;
     public abstract ShowMinAxes(mark: boolean): void;
 
+    public abstract SetEnvironment(type: EnvironmentType): Promise<boolean>;
+    public abstract GetEnvironment(): EnvironmentType;
     public abstract SetBackgroundColor(val: string): void;
     public abstract GetBackgroundColor(): string;
 
@@ -63,6 +65,11 @@ export abstract class Render {
 
     public abstract GetAnimationNames(): Array<string>;
     public abstract PlayAnimationWithName(name: string, isPlay: boolean, speed: number, type: AnimationPlayMode): void;
+
+    public abstract UpdateLight(light: ILight): void;
+
+    public abstract ShowGrid(mark: boolean): void;
+    public abstract IsGridShow(): boolean;
 
     public abstract FitNodeWithID(nodeID: number): void;
 

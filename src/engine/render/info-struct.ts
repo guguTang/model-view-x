@@ -10,9 +10,13 @@ export declare interface IMaterialInfo {
 };
 
 export type AnimationPlayMode = 'once' | 'reverse' | 'repeat' | 'pingpong';
+export type EnvironmentType = 'none' | 'room' | 'footprint-court' | 'venice-sunset';
+
+export type LightEnum = 'ambient' | 'direct';
 export declare interface ILight {
     color: string;
     intensity: number;
+    type: LightEnum,
 }
 
 export declare interface INodeSimpleInfo {

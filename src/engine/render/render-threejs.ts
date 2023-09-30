@@ -31,12 +31,14 @@ import {
     BufferGeometry,
 } from 'three';
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { INodeSimpleInfo, IMaterialInfo, AnimationPlayMode } from './info-struct';
+import { INodeSimpleInfo, IMaterialInfo, AnimationPlayMode, LightEnum, ILight, EnvironmentType } from './info-struct';
 import { factoryCreateLoaderForTHREE } from './loader/threejs-loader';
 import { LoaderType, LoaderOpts } from './loader/loader';
+import { THREEHelper } from './threejs/helper';
+// import a from '@/assets/images/footprint_court_2k.exr?raw';
+// console.log(a);
 
 export class RenderThreejs extends Render {
     private _defaultCamera: PerspectiveCamera;
@@ -51,13 +53,16 @@ export class RenderThreejs extends Render {
     private _axesHelper: AxesHelper | null = null;
     private _gridHelper: GridHelper | null = null;
     private _boxHelper: BoxHelper | null = null;
-    private _pmremGenerator: PMREMGenerator;
-    private _lights: Array<Light> = [];
+    // private _pmremGenerator: PMREMGenerator;
+    // private _lights: Array<Light> = [];
+    private _lights: Map<LightEnum, Light> = new Map<LightEnum, Light>();
 
-    private _neutralEnvironment: Texture;
+    // private _neutralEnvironment: Texture;
     private _mixer?: AnimationMixer | null;
     private _clips: Array<AnimationClip> = [];
     private _controls: OrbitControls;
+
+    private _helper: THREEHelper;
 
     private _prevTime: number = 0;
 
@@ -68,7 +73,7 @@ export class RenderThreejs extends Render {
         super(el, axesel, opts);
         // init scene
         this._scene = new Scene();
-        this.SetBackgroundColor(this._config.backgroundColor);
+        this.SetBackgroundColor(this._state.backgroundColor);
 
         // init camera
         const fov = false ? 0.8 * 180 / Math.PI : 60;
@@ -83,12 +88,14 @@ export class RenderThreejs extends Render {
         this._renderer.setPixelRatio(window.devicePixelRatio);
         this._renderer.setSize(this._el.clientWidth, this._el.clientHeight);
 
-        //
-        this._pmremGenerator = new PMREMGenerator(this._renderer);
-        this._pmremGenerator.compileEquirectangularShader();
+        this._helper = new THREEHelper(this._renderer);
 
-        this._neutralEnvironment = this._pmremGenerator.fromScene(new RoomEnvironment()).texture;
-        console.log(this._neutralEnvironment);
+        //
+        // this._pmremGenerator = new PMREMGenerator(this._renderer);
+        // this._pmremGenerator.compileEquirectangularShader();
+
+        // this._neutralEnvironment = this._pmremGenerator.fromScene(new RoomEnvironment()).texture;
+        // console.log(this._neutralEnvironment);
 
         this._controls = new OrbitControls(this._defaultCamera, this._renderer.domElement);
         this._controls.screenSpacePanning = true;
@@ -192,61 +199,120 @@ export class RenderThreejs extends Render {
     }
 
     private addLights() {
-        // 环境关
-        const light1  = new AmbientLight(this._config.ambientColor, this._config.ambientIntensity);
-        light1.name = 'ambient_light';
-        this._defaultCamera.add(light1);
+        // 环境光
+        const ambientLight  = new AmbientLight(this._state.lights.ambient.color, this._state.lights.ambient.intensity);
+        ambientLight.name = 'ambient_light';
+        this._defaultCamera.add(ambientLight);
         
 
-        // 方向光
-        const light2  = new DirectionalLight(this._config.directColor, this._config.directIntensity);
-        light2.position.set(0.5, 0, 0.866); // ~60º
-        light2.name = 'main_light';
-        this._defaultCamera.add(light2);
+        // 方向光 主光源
+        const directLight  = new DirectionalLight(this._state.lights.direct.color, this._state.lights.direct.intensity);
+        directLight.position.set(0.5, 0, 0.866); // ~60º
+        directLight.name = 'main_light';
+        this._defaultCamera.add(directLight);
 
-        this._lights.push(light1, light2);
+        this._lights.set('ambient', ambientLight);
+        this._lights.set('direct', directLight);
     }
 
     private removeLights() {
         this._lights.forEach((light) => light.parent?.remove(light));
-        this._lights = [];
+        this._lights.clear();
     }
 
     private updateLights() {
-        if (this._config.punctualLights && !this._lights.length) {
+        if (this._config.punctualLights && !this._lights.size) {
             this.addLights();
-        } else if (!this._config.punctualLights && this._lights.length) {
+        } else if (!this._config.punctualLights && this._lights.size) {
             this.removeLights();
         }
 
         this._renderer.toneMapping = this._config.toneMapping as ToneMapping;
         this._renderer.toneMappingExposure = Math.pow(2, this._config.exposure);
 
-        if (this._lights.length === 2) {
-            this._lights[0].intensity = this._config.ambientIntensity;
-            this._lights[0].color.set(this._config.ambientColor);
-            this._lights[1].intensity = this._config.directIntensity;
-            this._lights[1].color.set(this._config.directColor);
+        if (this._lights.size > 0) {
+            this.updateLight('ambient');
+            this.updateLight('direct');
+        }
+    }
+
+    private updateLight(lightType: LightEnum) {
+        const light = this._lights.get(lightType);
+        let lightState: ILight | null = null;
+        switch (lightType) {
+            case 'ambient': {
+                lightState = this._state.lights.ambient;
+                break;
+            }  
+            case 'direct': {
+                lightState = this._state.lights.direct;
+                break;
+            }
+            default:
+                break;
+        }
+        if (lightState && light) {
+            light.intensity = this._state.lights.direct.intensity;
+            light.color.set(this._state.lights.direct.color);
+        }
+    }
+
+    private removeGrid() {
+        if (this._gridHelper) {
+            this._scene.remove(this._gridHelper);
+            this._gridHelper = null;
+            if (this._state.gridWithAxes && this._axesHelper) {
+                this._scene.remove(this._axesHelper);
+                this._axesHelper = null;
+            }
+        }
+    }
+    private updateGrid(size: number, force: boolean = false) {
+        if (this._state.grid) {
+            if (this._gridHelper === null || force === true) {
+                this.removeGrid();
+                let divisions = 10;
+                let finalSize = 10;
+                if (!size && this._content) {
+                    const box = new Box3().setFromObject(this._content);
+                    finalSize = box.getSize(new Vector3()).length();
+                } else {
+                    finalSize = size;
+                }
+                // divisions = Math.floor(finalSize / 10);
+                // console.error(finalSize, divisions);
+                this._gridHelper = new GridHelper(finalSize, divisions);
+                this._scene.add(this._gridHelper);
+
+                if (this._state.gridWithAxes) {
+                    this._axesHelper = new AxesHelper(finalSize * 0.8);
+                    this._axesHelper.renderOrder = 999;
+                    this._axesHelper.onBeforeRender = (renderer) => renderer.clearDepth();
+                    this._scene.add(this._axesHelper);
+                }
+            }
+        } else {
+            this.removeGrid();
         }
     }
 
     private updateDisplay() {
-        if (this._state.grid !== Boolean(this._gridHelper)) {
-            if (this._state.grid) {
-              this._gridHelper = new GridHelper();
-              this._axesHelper = new AxesHelper();
-              this._axesHelper.renderOrder = 999;
-              this._axesHelper.onBeforeRender = (renderer) => renderer.clearDepth();
-              this._scene.add(this._gridHelper);
-              this._scene.add(this._axesHelper);
-            } else if (this._gridHelper != null && this._axesHelper != null) {
-              this._scene.remove(this._gridHelper);
-              this._scene.remove(this._axesHelper);
-              this._gridHelper = null;
-              this._axesHelper = null;
-              this._axesRenderer.clear();
-            }
-          }
+        // if (this._state.grid !== Boolean(this._gridHelper)) {
+        //     if (this._state.grid) {
+        //       this._gridHelper = new GridHelper();
+        //       this._axesHelper = new AxesHelper();
+        //       this._axesHelper.renderOrder = 999;
+        //       this._axesHelper.onBeforeRender = (renderer) => renderer.clearDepth();
+        //       this._scene.add(this._gridHelper);
+        //       this._scene.add(this._axesHelper);
+        //     } else if (this._gridHelper != null && this._axesHelper != null) {
+        //       this._scene.remove(this._gridHelper);
+        //       this._scene.remove(this._axesHelper);
+        //       this._gridHelper = null;
+        //       this._axesHelper = null;
+        //       this._axesRenderer.clear();
+        //     }
+        // }
     }
 
     private addAxesHelper() {
@@ -384,6 +450,7 @@ export class RenderThreejs extends Render {
 
         this.updateLights();
         this.updateDisplay();
+        this.updateGrid(size, true);
     }
 
     private setOriginInfo() {
@@ -499,13 +566,32 @@ export class RenderThreejs extends Render {
         return true;
     }
 
+    public UpdateLight(light: ILight): void {
+        const lightIns = this._lights.get(light.type);
+        if (lightIns) {
+            lightIns.intensity = light.intensity;
+            lightIns.color.set(light.color);
+        }
+    }
+
+    public ShowGrid(mark: boolean): void {
+        this._state.grid = mark;
+        this.updateGrid(0, false);
+    }
+
+    public IsGridShow(): boolean {
+        return this._state.grid;
+    }
+
     public SetBackgroundColor(val: string): void {
-        this._config.backgroundColor = val;
-        this._scene.background = new Color(val);
+        if (this._state.environmentType === 'none') {
+            this._state.backgroundColor = val;
+            this._scene.background = new Color(val);
+        }
     }
 
     public GetBackgroundColor(): string {
-        return this._config.backgroundColor;
+        return this._state.backgroundColor;
     }
 
     public SetDoubleSide(mark: boolean, force?: boolean): void {
@@ -733,6 +819,30 @@ export class RenderThreejs extends Render {
             this._boxHelper = new BoxHelper(this._content, 0xffffff);
             this._scene.add(this._boxHelper);
         }
+    }
+
+    public GetEnvironment(): EnvironmentType {
+        return this._state.environmentType;
+    }
+
+    public async SetEnvironment(type: EnvironmentType): Promise<boolean> {
+        let rv = false;
+        if (type === 'none') {
+            this._scene.background = new Color(this._state.backgroundColor);
+            this._scene.environment = null;
+            rv = true;
+        } else {
+            const envMap = await this._helper.GetEnvironment(type);
+            if (envMap) {
+                this._scene.environment = envMap;
+                this._scene.background = envMap;
+                rv = true;
+            }
+        }
+        if (rv === true) {
+            this._state.environmentType = type;
+        }
+        return rv;
     }
 }
 
