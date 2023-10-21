@@ -34,6 +34,7 @@ export default defineComponent({
         width: {
             type: String,
             require: true,
+            default: '100%',
         },
         selected: {
             type: String,
@@ -105,9 +106,10 @@ export default defineComponent({
 <style lang="less" scoped>
 .title {
     font-weight: @tx-title-font-weight;
+    height: @tx-info-layout-title-content-height;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding: 10px 10px 10px 0px;
+    padding: @tx-info-layout-title-padding-top @tx-info-layout-title-padding-top @tx-info-layout-title-padding-bottom 0px;
     border-bottom: 1px solid @tx-border-color;
     color: @tx-title-color;
     display: block;
@@ -118,6 +120,8 @@ export default defineComponent({
 }
 
 .content {
-    height: 100% - 20px;
+    height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top} - @{tx-info-layout-title-height}");
+    overflow-y: auto;
+    // padding-top: 10px;
 }
 </style>

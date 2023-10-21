@@ -27,133 +27,178 @@
                 </div>
             </el-tooltip>
         </div>
-        <div class="separator"></div>
-        <div v-for="(item) in btnViewAuxiliaryState" :key="item.name" @click="handleClickViewAuxiliary(item)">
-            <el-tooltip :content="item.name" effect="light">
-                <div :class="item.selected?'button selected':'button'">
-                    <el-icon v-if="item.iconName === 'coordinates'" :size="btnSize"><i-home-coordinates/></el-icon>
-                    <el-icon v-else-if="item.iconName === 'autorotate'" :size="btnSize"><i-home-autorotate/></el-icon>
-                    <el-icon v-else-if="item.iconName === 'wireframe'" :size="btnSize"><i-home-wireframe/></el-icon>
-                    <el-icon v-else-if="item.iconName === 'boundbox'" :size="btnSize"><i-home-boundbox/></el-icon>
-                    <el-icon v-else :size="btnSize"><i-home-coordinates/></el-icon>
-                </div>
-            </el-tooltip>
-        </div>
-        <div class="separator"></div>
-        <div @click="testOpenGltf('gltf')">
-            <el-tooltip content="gltf" effect="light">
-                <div class="button">
-                    <el-icon :size="btnSize">
-                        <i-home-open/>
-                    </el-icon>
-                </div>
-            </el-tooltip>
-        </div>
-        <div @click="testOpenGltf('obj')">
-            <el-tooltip content="obj" effect="light">
-                <div class="button">
-                    <el-icon :size="btnSize">
-                        <i-home-open/>
-                    </el-icon>
-                </div>
-            </el-tooltip>
-        </div>
-        <div @click="testOpenGltf('fbx')">
-            <el-tooltip content="fbx" effect="light">
-                <div class="button">
-                    <el-icon :size="btnSize">
-                        <i-home-open/>
-                    </el-icon>
-                </div>
-            </el-tooltip>
-        </div>
-        <div @click="testOpenGltf('dae')">
-            <el-tooltip content="dae" effect="light">
-                <div class="button">
-                    <el-icon :size="btnSize">
-                        <i-home-open/>
-                    </el-icon>
-                </div>
-            </el-tooltip>
+        <div v-show="alreayLoadOnce">
+            <div @click="handleClickExport">
+                <el-tooltip :content="btnExport.name" effect="light">
+                    <div :class="btnExport.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-export/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+            <div class="separator"></div>
+            <div @click="handleClickShowGlobalCoordinates">
+                <el-tooltip :content="btnShowGlobalCoordinates.name" effect="light">
+                    <div :class="btnShowGlobalCoordinates.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-coordinates/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+            <div @click="handleClickAutoRotate">
+                <el-tooltip :content="btnAutoRotate.name" effect="light">
+                    <div :class="btnAutoRotate.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-autorotate/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+            <div class="separator"></div>
+            <div @click="handleClickShowWireframe">
+                <el-tooltip :content="btnShowWireframe.name" effect="light">
+                    <div :class="btnShowWireframe.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-wireframe/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+            <div @click="handleClickShowBoundingbox">
+                <el-tooltip :content="btnShowBoundingbox.name" effect="light">
+                    <div :class="btnShowBoundingbox.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-boundbox/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+            <div @click="handleClickShowNormal">
+                <el-tooltip :content="btnShowNormal.name" effect="light">
+                    <div :class="btnShowNormal.selected?'button selected':'button'">
+                        <el-icon :size="btnSize"><i-home-normal/></el-icon>
+                    </div>
+                </el-tooltip>
+            </div>
+
+            <div class="separator"></div>
         </div>
         <OpenFromURL ref="openFromURL" />
         <OpenFromLocal ref="openFromLocal" />
+        <Export ref="exportDialog" />
     </div>
 </template>
 <script lang="ts">
 import { ElCol, ElRow, ElMessageBox, ElMessage } from 'element-plus';
 import OpenFromURL from './dialog/OpenFromURL.vue';
 import OpenFromLocal from './dialog/OpenFromLocal.vue';
+import Export from './dialog/Export.vue';
 import { defineComponent, ref } from "vue";
-import { EventType, GlobalBUS, IEventBandDataForButton, ViewAuxiliaryType } from '../engine/bus';
-import { LoaderType } from '@/engine/render/loader/loader';
+import { EventType, GlobalBUS } from '../engine/bus';
 import { TXEngine } from '@/engine/wrapper';
+// import { ModelType } from '@/engine/folder/file';
 const openFromURL = ref<InstanceType<typeof OpenFromURL> | null>(null);
 const openFromLocal = ref<InstanceType<typeof OpenFromLocal> | null>(null);
+const exportDialog = ref<InstanceType<typeof Export> | null>(null);
+interface IBtnState {
+    name: string;
+    selected: boolean;
+
+}
 export default defineComponent({
     name: 'ToolBar',
     components: {
         ElCol, ElRow
+    },
+    props: {
+        alreayLoadOnce: {
+            type: Boolean,
+            default: true,
+        }
     },
     data() {
         return {
             btnSize: 18,
             btnOpenFromUrl: {
                 name: '打开URL模型文件',
-                iconName: 'open_url',
                 selected: false,
-            },
+            } as IBtnState,
             btnOpenFromLocal: {
                 name: '打开本地模型文件',
-                iconName: 'open',
                 selected: false,
-            },
-            btnViewAuxiliaryState: [
-                {
-                    name: '显示辅助坐标系',
-                    id: ViewAuxiliaryType.ShowCoordinates,
-                    iconName: 'coordinates',
-                    selected: true,
-                },
-                {
-                    name: '自动旋转',
-                    id: ViewAuxiliaryType.AutoRotate,
-                    iconName: 'autorotate',
-                    selected: false,
-                },
-                {
-                    name: '显示线框',
-                    id: ViewAuxiliaryType.ShowWireframe,
-                    iconName: 'wireframe',
-                    selected: false,
-                },
-                {
-                    name: '显示包围盒',
-                    id: ViewAuxiliaryType.ShowBoundBox,
-                    iconName: 'boundbox',
-                    selected: false,
-                }
-            ],
+            } as IBtnState,
+            btnExport: {
+                name: '导出',
+                selected: false,
+            } as IBtnState,
+            btnShowWireframe: {
+                name: '线框',
+                selected: false,
+            } as IBtnState,
+            btnShowBoundingbox: {
+                name: '包围盒',
+                selected: false,
+            } as IBtnState,
+            btnShowNormal: {
+                name: '法线',
+                selected: false,                
+            } as IBtnState,
+            btnShowGlobalCoordinates: {
+                name: '辅助坐标系',
+                selected: true,
+            } as IBtnState,
+            btnAutoRotate: {
+                name: '自动旋转',
+                selected: false,
+            } as IBtnState,
         };
     },
     created() {
-        GlobalBUS.Off(EventType.ButtonChangeCallback, this.handleCallback);
-        GlobalBUS.On(EventType.ButtonChangeCallback, this.handleCallback);
+        GlobalBUS.Off(EventType.ViewTreeModelNodeChange, this.refreshBtnStateForNodeChange);
+        GlobalBUS.On(EventType.ViewTreeModelNodeChange, this.refreshBtnStateForNodeChange);
+
+        GlobalBUS.Off(EventType.LoadSceneDone, this.refreshBtnStateForNodeChange);
+        GlobalBUS.On(EventType.LoadSceneDone, this.refreshBtnStateForNodeChange);
     },
     methods: {
-        async testOpenGltf(str: string) {
-            const modelMap = new Map<string, string>();
-            modelMap.set('fbx', 'https://threejs.org/examples/models/fbx/Samba%20Dancing.fbx');
-            modelMap.set('gltf', 'https://threejs.org/examples/models/gltf/IridescentDishWithOlives.glb');
-            modelMap.set('obj', 'https://threejs.org/examples/models/obj/male02/male02.obj');
-            modelMap.set('dae', 'https://threejs.org/examples/models/collada/abb_irb52_7_120.dae');
-            const uri = modelMap.get(str);
-            if (uri) {
-                await TXEngine.Load({
-                    type: LoaderType.URL,
-                    url: uri,
-                });
+        handleClickShowWireframe() {
+            const btn: IBtnState = this.btnShowWireframe;
+            const mark = !btn.selected;
+            if (TXEngine.ShowSelectedWireframe(mark)) {
+                btn.selected = mark;
             }
+        },
+        handleClickShowBoundingbox() {
+            const btn: IBtnState = this.btnShowBoundingbox;
+            const mark = !btn.selected;
+            if (TXEngine.ShowSelectedBoundingbox(mark)) {
+                btn.selected = mark;
+            }
+        },
+        handleClickShowNormal() {
+            const btn: IBtnState = this.btnShowNormal;
+            const mark = !btn.selected;
+            if (TXEngine.ShowSelectedNormal(mark)) {
+                btn.selected = mark;
+            }
+        },
+        refreshBtnStateForNodeChange() {
+            const selectedNode = TXEngine.GetSelectedNode(true);
+            if (selectedNode != null) {
+                const { wireframe, normal, boundingbox } = selectedNode.effectState;
+                this.btnShowBoundingbox.selected = boundingbox;
+                this.btnShowNormal.selected = normal;
+                this.btnShowWireframe.selected = wireframe;
+            }
+        },
+        handleClickShowGlobalCoordinates() {
+            const btn: IBtnState = this.btnShowGlobalCoordinates;
+            const mark = !btn.selected;
+            if (TXEngine.ShowMinAxes(mark)) {
+                btn.selected = mark;
+            }
+        },
+        handleClickAutoRotate() {
+            const btn: IBtnState = this.btnAutoRotate;
+            const mark = !btn.selected;
+            if (TXEngine.AutoRotate(mark)) {
+                btn.selected = mark;
+            }
+        },
+        async handleClickExport() {
+            exportDialog.value?.show(true);
         },
         handleClickOpenFromUinoModelID() {
             ElMessageBox.prompt('请输入模型ID', '模型ID', {
@@ -194,40 +239,12 @@ export default defineComponent({
         handleClickOpenFromLocal() {
             openFromLocal.value?.open();
         },
-        handleClickViewAuxiliary(item: any) {
-            const ev: IEventBandDataForButton = {
-                name: item.name,
-                id: item.id,
-                selected: item.selected,
-            }
-            GlobalBUS.Emit(EventType.ButtonChange, ev);
-        },
-        handleCallback(ev: IEventBandDataForButton) {
-            switch(ev.id) {
-                case ViewAuxiliaryType.AutoRotate:
-                case ViewAuxiliaryType.ShowBoundBox:
-                case ViewAuxiliaryType.ShowCoordinates:
-                case ViewAuxiliaryType.ShowWireframe: {
-                    this.callbackForViewAuxiliary(ev);
-                    break;
-                }
-            }
-            
-        },
-        callbackForViewAuxiliary(ev: IEventBandDataForButton) {
-            const it: any = this.btnViewAuxiliaryState.find((item) => item.id === ev.id);
-            if (it) {
-                it.selected = ev.selected;
-            }
-        },
-        callbackForOpenFromURL(ev: IEventBandDataForButton) {
-            console.log(ev);
-        }
     },
     setup() {
         return {
             openFromURL,
             openFromLocal,
+            exportDialog,
         };
     }
 });

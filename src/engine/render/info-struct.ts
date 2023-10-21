@@ -5,9 +5,6 @@ import {
 
 export type IVector3 = Vector3;
 export type IVector2 = Vector2;
-export declare interface IMaterialInfo {
-
-};
 
 export type AnimationPlayMode = 'once' | 'reverse' | 'repeat' | 'pingpong';
 export type EnvironmentType = 'none' | 'room' | 'footprint-court' | 'venice-sunset';
@@ -19,6 +16,13 @@ export declare interface ILight {
     type: LightEnum,
 }
 
+export declare interface INodeEffectState {
+    wireframe: boolean;
+    normal: boolean;
+    boundingbox: boolean;
+    axes: boolean;
+}
+
 export declare interface INodeSimpleInfo {
     id: number;
     name: string;
@@ -27,9 +31,10 @@ export declare interface INodeSimpleInfo {
     children: Array<INodeSimpleInfo>;
     vertices: number;
     triangles: number;
-    boundingBox: IVector3,
-    min?: IVector3,
-    max?: IVector3,
+    boundingBox: IVector3;
+    min?: IVector3;
+    max?: IVector3;
+    effectState: INodeEffectState;
 }
 
 export declare interface INodeGeomertySimpleInfo {

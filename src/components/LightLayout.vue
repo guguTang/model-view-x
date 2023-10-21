@@ -86,7 +86,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .light-content {
     overflow-x: auto;
-    margin-top: 12px;
+    // margin-top: 12px;
     height: 100%;
 }
 </style>

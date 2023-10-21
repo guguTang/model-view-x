@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { EventType, GlobalBUS, IEventBandDataForButton } from '../../engine/bus';
+import { EventType, GlobalBUS } from '../../engine/bus';
 /* const dialogForOpenFromURL = {
     title: '打开远端模型',
                 message: '输入远程URL模型文件',
@@ -43,8 +43,7 @@ export default defineComponent({
     data() {
         return {
             visible: false,
-            url: 'http://127.0.0.1:10001/obj/1/index.obj',
-            // url: 'https://model.3dmomoda.com/models/42813fec04904dc49158a2a1fd0ec7f8/0/gltf/index.gltf',
+            url: '',
         };
     },
     methods: {
@@ -58,11 +57,11 @@ export default defineComponent({
                 name: EventType.OpenFromUrl,
                 id: EventType.OpenFromUrl,
                 value: this.url,
-            })
+            });
         },
-        callbackForOpenFromURL(ev: IEventBandDataForButton) {
-            console.log(ev);
-        }
+        // callbackForOpenFromURL(ev: IEventBandDataForButton) {
+        //     console.log(ev);
+        // }
     },
 });
 </script>
