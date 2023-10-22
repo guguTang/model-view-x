@@ -84,10 +84,16 @@ export class THREEHelper {
         rv.scale = new TX.Coord2D(tex.repeat.x, tex.repeat.y);
         rv.rotation = tex.rotation;
         rv.mimeType = tex.userData['mimeType'] as string | '';
-        if (tex.format === THREE.RGBAFormat && tex.image instanceof ImageBitmap) {
-            rv.buffer = tex.image;
-            rv.width = tex.image.width;
-            rv.height = tex.image.height;
+        if (tex.format === THREE.RGBAFormat) {
+            if (tex.image instanceof ImageBitmap) {
+                rv.buffer = tex.image;
+                rv.width = tex.image.width;
+                rv.height = tex.image.height;
+            } else if (tex.source.data) {
+                rv.buffer = tex.source.data;
+                rv.width = tex.source.data.width;
+                rv.height = tex.source.data.height;
+            }
         } else if (tex instanceof CompressedTexture) {
             const compressedTex: CompressedTexture = tex as CompressedTexture;
             const firstMipmap = compressedTex.mipmaps[0];

@@ -1,11 +1,11 @@
 import { Coord2D } from '../../geomerty/coord2d';
-
+type bufferTypeUnion = ImageBitmap | ArrayBufferView | HTMLImageElement | null;
 export class TextureMap {
     private _name: string;
     private _mimeType: string;
     private _offset: Coord2D;
     private _scale: Coord2D;
-    private _buffer: ImageBitmap | null | any | Uint8ClampedArray;
+    private _buffer: bufferTypeUnion;
     private _rotation: number;
     private _width: number;
     private _height: number;
@@ -47,7 +47,7 @@ export class TextureMap {
         return this._height;
     }
 
-    public get buffer(): any {
+    public get buffer(): bufferTypeUnion {
         return this._buffer;
     }
 
@@ -95,10 +95,8 @@ export class TextureMap {
         this._rotation = val;
     }
 
-    public set buffer(val: ImageBitmap | Uint8ClampedArray) {
+    public set buffer(val: bufferTypeUnion) {
         this._buffer = val;
-        // this._width = val.width;
-        // this._height = val.height;
     }
 
     public addExtra(key: string, val: any) {

@@ -1,6 +1,7 @@
 <template>
     <div>
         <canvas class="map-canvas" ref="mapCanvas"></canvas>
+        <canvas class="map-canvas" ref="mapCanvasCompress"></canvas>
         <el-collapse v-model="activeMaterialNames">
             <el-collapse-item v-for="(val) in materials" :title="`材质(${val.name})`" :name="val.name">
                 <template #title>
@@ -190,6 +191,7 @@ import { KTX2Renderer } from '@/engine/tools/ktx2-render';
 import { RGBColorToHexString } from '@/engine/model/color';
 import { MaterialUnion, TextureWrapper } from '@/types/material';
 const mapCanvas: Ref<HTMLCanvasElement | null> = ref(null);
+const mapCanvasCompress: Ref<HTMLCanvasElement | null> = ref(null);
 export default defineComponent({
     name: 'ModelInfoMaterialLayout',
     components: {
@@ -265,40 +267,55 @@ export default defineComponent({
             return rv;
         },
         convertImageDataToBase64(texture: TX.Texture): string {
-            if (mapCanvas && mapCanvas.value) {
-                mapCanvas.value.width = texture.width;
-                mapCanvas.value.height = texture.height;
-                mapCanvas.value.style.width = texture.width + 'px';
-                mapCanvas.value.style.height = texture.height + 'px';
-                if (texture.buffer) {
-                    if (texture.buffer instanceof ImageBitmap) {
+            if (texture.buffer) {
+                if (texture.buffer instanceof HTMLImageElement) {
+                    return texture.buffer.src;
+                }
+
+                if (texture.buffer instanceof ImageBitmap) {
+                    if (mapCanvas && mapCanvas.value) {
+                        mapCanvas.value.width = texture.width;
+                        mapCanvas.value.height = texture.height;
+                        mapCanvas.value.style.width = texture.width + 'px';
+                        mapCanvas.value.style.height = texture.height + 'px';
                         const ctx: CanvasRenderingContext2D | null = mapCanvas.value.getContext('2d');
                         if (ctx) {
                             ctx.reset();
                             ctx.drawImage(texture.buffer, 0, 0, texture.width, texture.height);
-                            return mapCanvas.value.toDataURL();
+                            return mapCanvas.value.toDataURL('image/png');
                         }
                     }
-                    if (texture.mimeType === 'image/ktx2') {
-                        const ctx: WebGLRenderingContext | null = mapCanvas.value.getContext('webgl', {
+                }
+                if (texture.buffer instanceof Uint8Array && texture.mimeType === 'image/ktx2') {
+                    if (mapCanvasCompress && mapCanvasCompress.value) {
+                        mapCanvasCompress.value.width = texture.width;
+                        mapCanvasCompress.value.height = texture.height;
+                        mapCanvasCompress.value.style.width = texture.width + 'px';
+                        mapCanvasCompress.value.style.height = texture.height + 'px';
+                        const ctx: WebGLRenderingContext | null = mapCanvasCompress.value.getContext('webgl', {
                             alpha: true,
                             antialias: true,
                         });
                         if (ctx) {
-                            // mapCanvas.value.style.backgroundColor = 'transparent';
-                            // mapCanvas.value.style.display = 'block';
                             const ktx2Render = new KTX2Renderer(ctx);
                             const { buffer, width, height } = texture;
                             const format = texture.getExtra('format') as number;
                             let base64String: string = '';
                             if (ktx2Render.draw(buffer, width, height, format) === true) {
-                                base64String = mapCanvas.value.toDataURL();
+                                base64String = mapCanvasCompress.value.toDataURL();
                             }
                             // ktx2Render.clean();
                             return base64String;
                         }
                     }
                 }
+            }
+            if (mapCanvas && mapCanvas.value) {
+                mapCanvas.value.width = texture.width;
+                mapCanvas.value.height = texture.height;
+                mapCanvas.value.style.width = texture.width + 'px';
+                mapCanvas.value.style.height = texture.height + 'px';
+                
             }
             return '';
         },
@@ -314,7 +331,8 @@ export default defineComponent({
     },
     setup() {
         return {
-            mapCanvas
+            mapCanvas,
+            mapCanvasCompress
         };
     },
 })
