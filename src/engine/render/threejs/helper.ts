@@ -1,5 +1,6 @@
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import {
     WebGLRenderer,
     PMREMGenerator,
@@ -21,6 +22,14 @@ import * as TX from '@/engine/index';
 import { MaterialPhysical } from '../../model/material/physical';
 import { RGBColor, RGBColorFromFloatComponents } from '../../model/color';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+const baseEnvUrl = 'resource/texture/env/';
+const genSkyBoxImagePathArray = (parentFolder: string): Array<string> => {
+    return [
+        `${parentFolder}posx.jpg`, `${parentFolder}negx.jpg`,
+        `${parentFolder}posy.jpg`,  `${parentFolder}negy.jpg`,
+        `${parentFolder}posz.jpg`, `${parentFolder}negz.jpg`
+    ];
+};
 export class THREEHelper {
     private _renderer: WebGLRenderer;
     private _pmremGenerator: PMREMGenerator;
@@ -47,28 +56,62 @@ export class THREEHelper {
     }
 
     private GetCubeMapTexture(type: EnvironmentType): Promise<Texture | undefined> {
-        let imgPath = '';
         switch (type) {
             case 'footprint-court': {
-                imgPath = 'resource/texture/footprint_court_2k.exr';
-                break;
+                return this.loadExrTexture(`${baseEnvUrl}exr/footprint_court_2k.exr`);
             }
             case 'venice-sunset': {
-                imgPath = 'resource/texture/venice_sunset_1k.exr';
-                break;
+                return this.loadExrTexture(`${baseEnvUrl}exr/venice_sunset_1k.exr`);
+            }
+            case 'blue-sky': {
+                return this.loadCubeTexture(genSkyBoxImagePathArray(`${baseEnvUrl}bluesky/`));
+            }
+            case 'night': {
+                return this.loadCubeTexture(genSkyBoxImagePathArray(`${baseEnvUrl}night/`));
+            }
+            case 'sky-dusk': {
+                return this.loadHdrTexture(`${baseEnvUrl}hdr/VizPeople_v0003_0001_4k.hdr`);
+            }
+            case 'seafloor': {
+                return this.loadHdrTexture(`${baseEnvUrl}hdr/Dosch-Underwater_0005_4k.hdr`);
             }
             default: {
                 break;
             }
         }
-        if (imgPath === '') {
-            return Promise.resolve(undefined);
-        }
+        return Promise.resolve(undefined);
+    }
+
+    private loadExrTexture(imgPath: string): Promise<Texture | undefined> {
         return new Promise<Texture | undefined>((resolve, reject) => {
             new EXRLoader().load(imgPath, (texture: DataTexture) => {
                 const envMap = this._pmremGenerator.fromEquirectangular(texture).texture;
                 this._pmremGenerator.dispose();
                 resolve(envMap);
+            }, undefined, reject);
+        });
+    }
+
+    private loadHdrTexture(imgPath: string): Promise<Texture | undefined> {
+        return new Promise<Texture | undefined>((resolve, reject) => {
+            const loader = new RGBELoader();
+            // loader.setDataType(THREE.HalfFloatType);
+            loader.load(imgPath, (texture: DataTexture) => {
+                const envMap = this._pmremGenerator.fromEquirectangular(texture).texture;
+                this._pmremGenerator.dispose();
+                resolve(envMap);
+            }, undefined, reject);
+        });
+    }
+
+    private loadCubeTexture(imgPathArray: Array<string>): Promise<Texture | undefined> {
+        if (imgPathArray.length < 6) {
+            return Promise.resolve(undefined);
+        }
+        return new Promise<Texture | undefined>((resolve, reject) => {
+            const loader = new THREE.CubeTextureLoader();
+            loader.load(imgPathArray, (texture: THREE.CubeTexture) => {
+                resolve(texture);
             }, undefined, reject);
         });
     }

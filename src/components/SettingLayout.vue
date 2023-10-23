@@ -68,6 +68,22 @@ const skyOptions: Array<SkyOptionsItem> = [{
     value: 'room',
     label: '室内',
 }, {
+    key: 'blue-sky',
+    value: 'blue-sky',
+    label: '蓝色天空',
+}, {
+    key: 'sky-dusk',
+    value: 'sky-dusk',
+    label: '天空黄昏',
+}, {
+    key: 'night',
+    value: 'night',
+    label: '黑夜',
+}, {
+    key: 'seafloor',
+    value: 'seafloor',
+    label: '海底',
+}, {
     key: 'footprint-court',
     value: 'footprint-court',
     label: '广场',
