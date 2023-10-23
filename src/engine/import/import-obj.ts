@@ -305,7 +305,7 @@ export class ImporterOBJ extends ImporterBase {
         console.log(name);
     }
 
-    private ProcessFace(parameters: Array<string>) {
-        console.log(parameters);
+    private ProcessFace(parameters?: Array<string>) {
+        // console.log(parameters);
     }
 }

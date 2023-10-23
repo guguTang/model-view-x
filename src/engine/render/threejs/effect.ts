@@ -3,12 +3,14 @@ import * as THREE from 'three';
 import { EffectComposer  } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
+// import { OutlinePass } from "./outlinepass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 // import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js"
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
+// import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { THREEUtils } from './utils';
 
 export default class THREEEffect {
@@ -16,7 +18,7 @@ export default class THREEEffect {
     private _renderer: WebGLRenderer;
     private _scene: THREE.Scene;
     // outline hightlight
-    private _enablePass: boolean = false;
+    private _enablePass: boolean = true;
     private _composer: EffectComposer;
     private _smaaPass: SMAAPass;
     private _renderPass: RenderPass;
@@ -40,27 +42,18 @@ export default class THREEEffect {
         this._renderer = renderer;
         this._composer = new EffectComposer(this._renderer);
         const { clientHeight, clientWidth } = this._el;
-        // 抗锯齿
-        this._smaaPass = new SMAAPass(clientWidth, clientHeight);
-        this._composer.addPass(this._smaaPass);
-
-        // 变暗问题
-        const outputPass = new OutputPass();
-        this._composer.addPass(outputPass);
-
+        
         // let fxaaPass = new ShaderPass(FXAAShader)
         // const pixelRatio = this._renderer.getPixelRatio();
         // fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / (this._el.offsetWidth * pixelRatio);
         // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / (this._el.offsetHeight * pixelRatio);
         // this._composer.addPass(fxaaPass);
 
-        this._fxaaPass = new ShaderPass(FXAAShader);
-        this._fxaaPass.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight);
+        
         // const pixelRatio = this._renderer.getPixelRatio();
         // this._fxaaPass.material.uniforms.resolution.value.x = 1 / (this._el.offsetWidth * pixelRatio);
         // this._fxaaPass.material.uniforms.resolution.value.y = 1 / (this._el.offsetHeight * pixelRatio);
-        this._fxaaPass.renderToScreen = true;
-        this._composer.addPass(this._fxaaPass);
+        
 
         // 发光效果
         // const unrealBloomPass = new UnrealBloomPass();
@@ -71,6 +64,23 @@ export default class THREEEffect {
 
         this._renderPass = new RenderPass(this._scene, camera);
         if (this._enablePass) this._composer.addPass(this._renderPass);
+
+        // 颜色修正
+        // const gammaCorrectionShader = new ShaderPass(GammaCorrectionShader);
+        // this._composer.addPass(gammaCorrectionShader);
+
+        // 变暗问题
+        const outputPass = new OutputPass();
+        this._composer.addPass(outputPass);
+
+        // 抗锯齿
+        this._smaaPass = new SMAAPass(clientWidth, clientHeight);
+        this._composer.addPass(this._smaaPass);
+
+        this._fxaaPass = new ShaderPass(FXAAShader);
+        this._fxaaPass.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight);
+        this._fxaaPass.renderToScreen = true;
+        this._composer.addPass(this._fxaaPass);
 
         this._outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), scene, camera);
         this._composer.addPass(this._outlinePass);
@@ -251,17 +261,19 @@ export default class THREEEffect {
     public RemoveOutlinePass(node?: Object3D) {
         if (this._enablePass === false) return;
         if (node !== undefined) {
-            this._outlinePass.selectedObjects = this._outlinePass.selectedObjects.filter(it => it !== node);
+            this._outlinePass.selectedObjects = this._outlinePass.selectedObjects.filter((it: any) => it !== node);
         } else {
             this._outlinePass.selectedObjects = [];
         }
     }
 
     public Select(node: Object3D) {
-        this.AddOutline(node);
+        // this.AddOutline(node);
+        this.AddOutlinePass(node);
     }
 
     public UnSelect(node?: Object3D) {
-        this.RemoveOutline(node);
+        // this.RemoveOutline(node);
+        this.RemoveOutlinePass(node);
     }
 };

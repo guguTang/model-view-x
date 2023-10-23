@@ -5,7 +5,8 @@ import { LoaderUtils } from 'three';
 import DataTransfer from '@/engine/data/transfer';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { OBJLoader } from './threejs-obj-loader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { Collada, ColladaLoader  } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
@@ -180,14 +181,14 @@ export class THREEOBJLoader extends THREELoader {
                 materialArray = await Promise.all(promiseArray);
                 materialArray.forEach(it => objLoader.setMaterials(it));
             }
-            objLoader.load(url, (object) => {
+            objLoader.load(url, (object: any) => {
                 if (!object) {
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
                 }
                 this._object = object;
                 this._clips = object.animations;
                 resolve(true);
-            }, ()=>{}, (e) => {
+            }, ()=>{}, (e: any) => {
                 reject(e);
             });
         });
