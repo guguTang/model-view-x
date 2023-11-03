@@ -6,10 +6,28 @@ import vue from '@vitejs/plugin-vue'
 import Icons from 'unplugin-icons/vite'
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import IconsResolver from 'unplugin-icons/resolver';
+import copy from 'rollup-plugin-copy';
 import path from 'path';
+// import { copy } from 'fs-extra';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      plugins: [
+        // copy({
+        //   targets: [{
+        //     src: 'src/vendor/**/*',
+        //     dest: 'dist',
+        //   }],
+        //   verbose: true,
+        //   hook: 'generateBundle',
+        //   copyOnce: true,
+        //   flatten: false,
+        // }),
+      ]
+    }
+  },
   plugins: [
     vue(),
     Icons({ 
@@ -27,6 +45,19 @@ export default defineConfig({
       resolvers: [ElementPlusResolver(), IconsResolver({
         customCollections: ['home']
       })],
+    }),
+    copy({
+      targets: [{
+        src: 'vendor/**/*',
+        dest: 'dist/vendor',
+      }, {
+        src: 'resource/**/*',
+        dest: 'dist/resource',
+      }],
+      verbose: true,
+      hook: 'generateBundle',
+      copyOnce: true,
+      flatten: false,
     }),
   ],
   resolve: {

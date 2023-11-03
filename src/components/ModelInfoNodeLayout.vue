@@ -1,21 +1,70 @@
 <template>
     <div>
         <el-row class="tools">
-            <el-col :span="24">
-                <div class="item" @click="handleExpandTree">
+            <el-col :span="4">
+                <div class="item" @click="handleClickStruct('flatlist')">
+                    <el-tooltip content="列表结构" effect="light">
+                        <div class="button">
+                            <el-icon :size="toolBtnSize" :class="structType==='flatlist' ? 'selected' : ''">
+                                <i-home-flat_list/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
+                </div>
+            </el-col>
+            <el-col :span="4">
+                <div class="item" @click="handleClickStruct('tree')">
+                    <el-tooltip content="树结构" effect="light">
+                        <div class="button">
+                            <el-icon :size="toolBtnSize" :class="structType==='tree' ? 'selected' : ''">
+                                <i-home-tree_view/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
+                </div>
+            </el-col>
+            <div class="separator"></div>
+            <el-col :span="4">
+                <div class="item" @click="handleExpandTree" v-show="structType === 'tree'">
                     <el-tooltip content="展开" effect="light">
                         <div class="button">
-                            <el-icon :size="18">
+                            <el-icon :size="toolBtnSize">
                                 <i-home-expand/>
                             </el-icon>
                         </div>
                     </el-tooltip>
                 </div>
-                <div class="item" @click="handleCollapseTree">
+            </el-col>
+            <el-col :span="4">
+                <div class="item" @click="handleCollapseTree" v-show="structType === 'tree'">
                     <el-tooltip content="收起" effect="light">
                         <div class="button">
-                            <el-icon :size="18">
+                            <el-icon :size="toolBtnSize">
                                 <i-home-collapse/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
+                </div>
+            </el-col>
+            <!-- <div class="separator"></div> -->
+            <el-col :span="3" style="margin-left: 8px;">
+                <div class="item" @click="handleClickLocateRoot">
+                    <el-tooltip content="定位" effect="light">
+                        <div class="button">
+                            <el-icon :size="toolBtnSize">
+                                <i-home-fit/>
+                            </el-icon>
+                        </div>
+                    </el-tooltip>
+                </div>
+            </el-col>
+            <el-col :span="4">
+                <div class="item" @click="handleClickShowRoot">
+                    <el-tooltip content="显示/隐藏" effect="light">
+                        <div class="button">
+                            <el-icon :size="toolBtnSize">
+                                <i-home-visible v-show="isRootNodeShow"/>
+                                <i-home-hidden v-show="!isRootNodeShow"/>
                             </el-icon>
                         </div>
                     </el-tooltip>
@@ -31,7 +80,7 @@
             <el-col :span="24">
                 <el-tree
                     ref="treeRef"
-                    :data="nodeData"
+                    :data="showNodeData"
                     :props="defaultProps"
                     :expand-on-click-node="false"
                     :highlight-current="true"
@@ -41,10 +90,10 @@
                 >
                     <template #default="{ node, data }">
                         <div class="custom-tree-node" :title="node.label">
-                            <span class="label" :style="{color: data.isMesh?'red':'black'}">{{ node.label }}</span>
+                            <span class="label" :style="{color: data.isMesh?'#559630':'black'}">{{ node.label }}</span>
                             <span @click.stop="">
                                 <a @click="locateNode(data)">
-                                    <el-icon :size="14"><i-home-fit/></el-icon>
+                                    <el-icon :size="14"><i-home-fit class="fit"/></el-icon>
                                 </a>
                                 <a style="margin-left: 8px" @click="showNode(data)">
                                     <el-icon :size="14">
@@ -74,6 +123,7 @@ interface Tree {
   isMesh: boolean;
   children?: Array<Tree>;
 };
+type StructType = 'tree' | 'flatlist';
 
 const data: Tree[] = [];
 const dataFlat: Tree[] = [];
@@ -83,6 +133,11 @@ export default defineComponent({
     name: 'ModelInfoNodeLayout',
     data() {
         return {
+            toolBtnSize: 18,
+            structType: 'tree' as StructType,
+            rootNodeData: null as (Tree | null),
+            isRootNodeShow: true,
+            showNodeData: data, // 显示的tree
             nodeData: data, // 原始tree
             nodeDataFlat: dataFlat, // 打平的tree
             nodeDataMap: dataMap, // objectid => nodedata  映射
@@ -96,7 +151,7 @@ export default defineComponent({
     watch: {
         filterText: (val: string) => {
             treeRef.value!.filter(val);
-        }
+        },
     },
     created() {
         GlobalBUS.Off(EventType.LoadSceneDone, this.handleLoadSceneDone);
@@ -113,7 +168,10 @@ export default defineComponent({
                 console.error('LoadSceneDone Failed');
                 return;
             }
-            this.refreshNodeTree();
+            treeRef.value?.setCurrentKey(undefined);
+            this.$nextTick(() => {
+                this.refreshNodeTree();
+            })
         },
         refreshNodeTree() {
             const nodeTree = TXEngine.NodeSimpleTree;
@@ -121,18 +179,17 @@ export default defineComponent({
             if (nodeTree && nodeTree.length > 0) {
                 this.nodeData = this.engineNodeTree2ViewNodeTree(nodeTree);
                 this.saveNodeTreeRedundancy();
+                this.handleClickStruct(this.structType);
                 console.warn('tree node refresh');
             }
         },
         handleSingleClickOnView3D(data: IEventBandDataForSingleClickOnView3D) {
-            // TXEngine.SelectNodeWithID(data.objectID);
             const nodeData = this.nodeDataMap.get(data.objectID!);
             let beSelectNodeID: any = undefined;
             if (nodeData) {
                 beSelectNodeID = nodeData.id;
             }
             treeRef.value?.setCurrentKey(beSelectNodeID);
-            // treeRef.value?.setCurrentKey(beSelectedKey, true);
         },
         engineNodeTree2ViewNodeTree(nodeTree: Array<INodeSimpleInfo>): Array<Tree> {
             const func = (node: INodeSimpleInfo) => {
@@ -147,8 +204,8 @@ export default defineComponent({
                     return nodeForView;
                 });
             };
-            nodeTree = nodeTree[0].children;
-            return nodeTree.map(it => {
+            // nodeTree = nodeTree[0].children;
+            let rvTree =  nodeTree.map(it => {
                 return {
                     id: it.id,
                     label: it.name,
@@ -157,6 +214,11 @@ export default defineComponent({
                     children: func(it),
                 };
             });
+            if (rvTree.length > 0) {
+                this.rootNodeData = rvTree[0];
+                return rvTree[0].children;
+            }
+            return [];
         },
         saveNodeTreeRedundancy() {
             this.nodeDataFlat = [];
@@ -172,8 +234,11 @@ export default defineComponent({
             };
             recursion(this.nodeData);
         },
-        showNode(data: Tree) {
-            const mark = !data.visible;
+        showNode(data: Tree, forceMark?: boolean) {
+            let mark = !data.visible;
+            if (forceMark !== undefined) {
+                mark = forceMark;
+            }
             if (TXEngine.ShowNodeWithID(data.id, mark) === true) {
                 this.setVisible(data, mark);
             }
@@ -196,7 +261,31 @@ export default defineComponent({
                 value: selectNodeID,
             });
         },
+        handleClickStruct(type: StructType) {
+            this.structType = type;
+            if (this.structType === 'tree') {
+                this.showNodeData = this.nodeData;
+            } else {
+                this.showNodeData = this.nodeDataFlat.filter(it => it.isMesh);
+            }
+        },
+        handleClickLocateRoot() {
+            if(this.rootNodeData) {
+                treeRef.value?.setCurrentKey(undefined);
+                this.locateNode(this.rootNodeData);
+            }
+        },
+        handleClickShowRoot() {
+            if(this.rootNodeData) {
+                const mark = !this.isRootNodeShow;
+                treeRef.value?.setCurrentKey(undefined);
+                this.showNode(this.rootNodeData, mark);
+                this.isRootNodeShow = mark;
+            }
+        },
         locateNode(data: Tree) {
+            this.showNode(data, true);
+            treeRef.value?.setCurrentKey(data.id);
             TXEngine.FitNodeWithID(data.id);
         },
         filterNode(value: string, data: Tree) {
@@ -231,7 +320,7 @@ export default defineComponent({
     margin-top: 8px;
     overflow-x: auto;
     overflow-y: auto;
-    width: 230px;
+    width: 100%;
     height: calc(100vh - 240px);
     user-select: none;
 }
@@ -260,7 +349,16 @@ export default defineComponent({
     border-bottom: 1px solid @tx-border-color;
 }
 
+.separator {
+    background: @tx-border-color;
+    width: 1px;
+    height: 80%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
 .tools .item {
+    // margin-bottom: 4px;
     // margin-top: 2px;
     // margin-bottom: 2px;
 }
@@ -275,7 +373,15 @@ export default defineComponent({
     background: #c9e5f8;
 }
 
-.button.selected {
-    background: #e1e1e1;
+.button .selected {
+    // background: #08a8f1;
+    color: #08a8f1;
+}
+
+.fit {
+    color: gray;
+}
+.fit:hover {
+    color: orange;
 }
 </style>

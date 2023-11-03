@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="content">
         <el-row>
             <div v-show="activeIndex !== ''" class="info-layout">
-                <ModelInfoLayout width="230px" :selected="activeIndex" ref="modelInfoLayout"/>
+                <ModelInfoLayout :selected="activeIndex" ref="modelInfoLayout"/>
             </div>
             <el-menu
             :default-active="activeIndex"
-            class="el-menu-vertical-demo"
+            class="menu"
             :collapse="isCollapse"
             @select="handleSelect"
             @open="handleOpen"
@@ -65,19 +65,20 @@ export default defineComponent({
 });
 </script>
 <style lang="less" scoped>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 800px;
+.content {
+    user-select: none;
 }
 
-.el-menu {
+.menu {
     border-left: solid 1px var(--el-menu-border-color);
     border-right: none;
+    width: 50px;
 }
 
 .info-layout {
     margin-left: 10px;
     margin-right: 10px;
+    width: calc(100% - 70px);
     height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");
 }
 </style>

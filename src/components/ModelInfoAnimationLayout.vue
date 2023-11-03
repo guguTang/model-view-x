@@ -1,8 +1,8 @@
 <template>
     <div class="content">
         <el-row class="row">
-            <el-col :span="8">名称：</el-col>
-            <el-col :span="16">
+            <el-col :span="spanLabel">名称：</el-col>
+            <el-col :span="spanContent">
                 <el-select 
                 v-model="curAnimationName"
                 @change="handleAnimationChange"
@@ -21,20 +21,21 @@
         </el-row>
         <div v-if="curAnimation">
             <el-row class="row">
-                <el-col :span="8">速度：</el-col>
-                <el-col :span="16">
+                <el-col :span="spanLabel">速度：</el-col>
+                <el-col :span="spanContent">
                     <el-input-number
                     v-model="curAnimation.speed"
                     :min="1"
                     :max="10"
                     :precision="2"
                     :step="0.1"
+                    controls-position="right"
                     @change="handleAnimationSpeedChange" />
                 </el-col>
             </el-row>
             <el-row class="row">
-                <el-col :span="8">模式：</el-col>
-                <el-col :span="16">
+                <el-col :span="spanLabel">模式：</el-col>
+                <el-col :span="spanContent">
                     <el-select 
                     v-model="curAnimation.loop"
                     @change="handleAnimationLoopChange"
@@ -51,8 +52,8 @@
                 </el-col>
             </el-row>
             <el-row class="row">
-                <el-col :span="8">播放：</el-col>
-                <el-col :span="16">
+                <el-col :span="spanLabel">播放：</el-col>
+                <el-col :span="spanContent">
                     <el-switch v-model="curAnimation.isPlay" @change="handlePlayStateChange" />
                 </el-col>
             </el-row>
@@ -83,6 +84,8 @@ export default defineComponent({
     name: 'ModelInfoAnimationLayout',
     data() {
         return {
+            spanLabel: 8,
+            spanContent: 16,
             curAnimation: undefined as AnimationState | undefined,
             curAnimationName: '',
             animations: [] as Array<AnimationState>,

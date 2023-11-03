@@ -14,6 +14,7 @@ export enum ModelType {
     OBJ = 'obj',
     STL = 'stl',
     DAE = 'dae',
+    IFC = 'ifc',
 };
 
 export declare interface IFile {
@@ -43,6 +44,8 @@ export const guessModelFileTypeWithFileName = (fileName: string): ModelType => {
             return ModelType.STL;
         case 'dae':
             return ModelType.DAE;
+        case 'ifc':
+            return ModelType.IFC;
         default:
             return ModelType.NONE;
     }

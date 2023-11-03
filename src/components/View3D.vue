@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from "vue";
-import { GlobalBUS, EventType, IEventBandDataForButton, ViewAuxiliaryType, IEventBandData } from "../engine/bus/index";
+import { GlobalBUS, EventType, IEventBandData } from "../engine/bus/index";
 import { Render } from "../engine/render/render";
 import { ElLoading, ElMessage } from "element-plus";
 import { TXEngine } from "../engine/wrapper";
@@ -25,7 +25,7 @@ export default defineComponent({
     },
     methods: {
         async loadRenderer() {
-            renderer =  TXEngine.CreateRenderer(container.value, axes.value);//new RenderThreejs(container.value, axes.value);
+            renderer =  TXEngine.CreateRenderer(container.value, axes.value);
             if (!renderer) {
                 throw new Error('init renderer failed');
             }
@@ -33,38 +33,6 @@ export default defineComponent({
             TXEngine.AddSingleClickEventToBUS();
         },
         addEventListener() {
-            GlobalBUS.On(EventType.ButtonChange, async (ev: IEventBandDataForButton) => {
-                switch (ev.id) {
-                    case ViewAuxiliaryType.ShowCoordinates: {
-                        ev.selected = !ev.selected;
-                        renderer?.ShowMinAxes(ev.selected);
-                        GlobalBUS.Emit(EventType.ButtonChangeCallback, ev);
-                        break;
-                    }
-                    case ViewAuxiliaryType.AutoRotate: {
-                        ev.selected = !ev.selected;
-                        renderer?.AutoRotate(ev.selected);
-                        GlobalBUS.Emit(EventType.ButtonChangeCallback, ev);
-                        break;
-                    }
-                    case ViewAuxiliaryType.ShowBoundBox: {
-                        ev.selected = !ev.selected;
-                        renderer?.ShowBoundingBox(ev.selected);
-                        GlobalBUS.Emit(EventType.ButtonChangeCallback, ev);
-                        break;
-                    }
-                    case ViewAuxiliaryType.ShowWireframe: {
-                        ev.selected = !ev.selected;
-                        renderer?.ShowWireframe(ev.selected);
-                        GlobalBUS.Emit(EventType.ButtonChangeCallback, ev);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            });
-
             // 从url打开模型
             GlobalBUS.On(EventType.OpenFromUrl, async (ev: IEventBandData) => {
                 if (ev.value) {
@@ -105,11 +73,15 @@ export default defineComponent({
                         fullscreen: false,
                         lock: true,
                     });
+                    // const rv = await TXEngine.Load({
+                    //     type: LoaderType.Folder,
+                    //     folder: fileIns,
+                    // }).catch(e => {
+                    //     ElMessage.error(e.toString());
+                    // });
                     const rv = await TXEngine.Load({
                         type: LoaderType.Folder,
                         folder: fileIns,
-                    }).catch(e => {
-                        ElMessage.error(e.toString());
                     });
                     loadingIns.close();
                     if (rv === false) {
@@ -141,6 +113,7 @@ export default defineComponent({
 .view {
     position: relative;
     height: 100%;
+    width: 100%;
 }
 
 .container {
@@ -151,8 +124,8 @@ export default defineComponent({
 .axes {
     width: 100px;
     height: 100px;
-    margin: 20px;
-    padding: 0px;
+    margin: 0px;
+    padding-left: 10px;
     position: absolute;
     left: 0px;
     bottom: 0px;

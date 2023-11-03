@@ -1,6 +1,9 @@
 import { EventType, GlobalBUS, IEventBandDataForSingleClickOnView3D } from './bus';
+import { ExportOption } from './export/index';
+import { ModelType } from './folder/file';
+import { MaterialBase } from './model/material/index';
 import { DefaultRenderConfig, RenderConfig, RenderType } from './render/config';
-import { INodeSimpleInfo, AnimationPlayMode } from './render/info-struct';
+import { INodeSimpleInfo, AnimationPlayMode, ILight, EnvironmentType } from './render/info-struct';
 import { Render } from './render/render';
 import { RenderThreejs } from './render/render-threejs';
 import { LoaderOpts } from '@/engine/render/loader/loader';
@@ -121,6 +124,20 @@ class TXEngineWrapper {
         return this._renderer?.GetBackgroundColor();
     }
 
+    public GetEnvironment(): EnvironmentType {
+        if (!this._renderer) {
+            return 'none';
+        }
+        return this._renderer.GetEnvironment();
+    }
+
+    public async SetEnvironment(type: EnvironmentType): Promise<boolean> {
+        if (!this._renderer) {
+            return false;
+        }
+        return this._renderer?.SetEnvironment(type);
+    }
+
     public SetDoubleSide(mark: boolean): void {
         this._renderer?.SetDoubleSide(mark);
     }
@@ -141,8 +158,84 @@ class TXEngineWrapper {
         this._renderer?.FitNodeWithID(nodeID);
     }
 
-    public GetMaterialInfo(nodeID: number) {
-        this._renderer?.GetMaterialInfo(nodeID);
+    public GetMaterials(): Array<MaterialBase> {
+        if (!this._renderer) {
+            return [];
+        }
+        return this._renderer.GetMaterials();
+    }
+
+    public GetMaterialInfo(nodeID: number): Array<MaterialBase> {
+        if (!this._renderer) {
+            return [];
+        }
+        return this._renderer?.GetMaterialInfo(nodeID);
+    }
+
+    public UpdateLight(light: ILight): void {
+        this._renderer?.UpdateLight(light);
+    }
+
+    public ShowGrid(mark: boolean): void {
+        this._renderer?.ShowGrid(mark);
+    }
+
+    public ShowMinAxes(mark: boolean): boolean {
+        if (!this._renderer) {
+            return false;
+        }
+        return this._renderer.ShowMinAxes(mark);
+    }
+
+    public AutoRotate(mark: boolean): boolean {
+        if (!this._renderer) {
+            return false;
+        }
+        return this._renderer.AutoRotate(mark);
+    }
+
+    public IsGridShow(): boolean {
+        return !!this._renderer?.IsGridShow();
+    }
+
+    public ShowSelectedWireframe(mark: boolean): boolean {
+        if (!this._renderer) {
+            return false;
+        }
+        const nodeInfo = this.GetSelectedNode(true);
+        if (nodeInfo === null) {
+            return false;
+        }
+        return this._renderer.ShowNodeWireframe(nodeInfo.id, mark);
+    }
+
+    public ShowSelectedNormal(mark: boolean) :boolean {
+        if (!this._renderer) {
+            return false;
+        }
+        const nodeInfo = this.GetSelectedNode(true);
+        if (nodeInfo === null) {
+            return false;
+        }
+        return this._renderer.ShowNodeNormal(nodeInfo.id, mark);
+    }
+
+    public ShowSelectedBoundingbox(mark: boolean) :boolean {
+        if (!this._renderer) {
+            return false;
+        }
+        const nodeInfo = this.GetSelectedNode(true);
+        if (nodeInfo === null) {
+            return false;
+        }
+        return this._renderer.ShowBoundingBox(nodeInfo.id, mark);
+    }
+
+    public Export(modelType: ModelType, opts?: ExportOption): Promise<Blob | null> {
+        if (!this._renderer) {
+            return Promise.resolve(null);
+        }
+        return this._renderer.Export(modelType, opts);
     }
 };
 

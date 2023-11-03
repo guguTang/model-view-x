@@ -1,6 +1,6 @@
 export const EventType = {
-    ButtonChange: 'button_change',
-    ButtonChangeCallback: 'button_change_callback',
+    // ButtonChange: 'button_change',
+    // ButtonChangeCallback: 'button_change_callback',
     ViewTreeModelNodeChange: 'view_tree_model_node_change',
     OpenFromUrl: 'open_from_url',
     OpenFromLocal: 'open_from_local',
@@ -9,12 +9,13 @@ export const EventType = {
     SingleClickOnView3D: 'single_click_on_view3d',
 };
 
-export const ViewAuxiliaryType = {
-    ShowCoordinates: 'coordinates',
-    AutoRotate: 'auto-rotate',
-    ShowWireframe: 'wireframe',
-    ShowBoundBox: 'boundbox',
-};
+// export const ViewAuxiliaryType = {
+//     ShowCoordinates: 'coordinates',
+//     AutoRotate: 'auto-rotate',
+//     ShowWireframe: 'wireframe',
+//     ShowBoundBox: 'boundbox',
+//     ShowNormal: 'normal',
+// };
 
 // export const CommonButtonType = {
 //     OpenFromURL: 'open-from-url',
@@ -26,9 +27,9 @@ export declare interface IEventBandData {
     value?: any;
 };
 
-export declare interface IEventBandDataForButton extends IEventBandData {
-    selected: boolean
-};
+// export declare interface IEventBandDataForButton extends IEventBandData {
+//     selected: boolean
+// };
 
 export declare interface IEventBandDataForSingleClickOnView3D extends IEventBandData {
     objectID: number | null;

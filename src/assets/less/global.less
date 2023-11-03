@@ -6,3 +6,11 @@
 @tx-header-padding: 10px;
 @tx-tools-height: 40px;
 @tx-body-margin-top: 0px;
+
+@tx-info-layout-title-content-height: 24px;
+@tx-info-layout-title-padding-top: 10px;
+@tx-info-layout-title-padding-bottom: 10px;
+@tx-info-layout-title-height: @tx-info-layout-title-content-height + @tx-info-layout-title-padding-top + @tx-info-layout-title-padding-bottom;
+
+
+@tx-main-content-height: calc(~"100vh - @{tx-header-height} - @{tx-header-padding} - @{tx-tools-height} - @{tx-body-margin-top}");

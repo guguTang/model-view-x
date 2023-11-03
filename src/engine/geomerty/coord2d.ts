@@ -10,11 +10,19 @@ export class Coord2D {
 		return new Coord2D (this._x, this._y);
 	}
 
-    get x(): number {
+    public get x(): number {
         return this._x;
     }
 
-    get y(): number {
+    public get y(): number {
         return this._y;
+    }
+
+    public set x(val: number) {
+        this._x = val;
+    }
+
+    public set y(val: number) {
+        this._y = val;
     }
 }
