@@ -1,4 +1,4 @@
-import { BufferGeometry, Material, Mesh, Object3D, Scene } from 'three';
+import { BufferGeometry, Material, Mesh, Scene } from 'three';
 import { IFCManager } from './IFCManager';
 import { BaseSubsetConfig } from '../BaseDefinitions';
 

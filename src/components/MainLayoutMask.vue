@@ -83,10 +83,17 @@ export default defineComponent({
     },
     methods: {
         async handleClickSample(val: any) {
+            const buildUrl = (val: string) => {
+                const tmpArr = location.pathname.split('/').filter(it => it != '' && it.indexOf('.html') === -1);
+                if (tmpArr.length > 0) {
+                    return `${window.location.origin}/${tmpArr.join('/')}/${val}`;  
+                }
+                return `${window.location.origin}/${val}`;
+            }
             GlobalBUS.Emit(EventType.OpenFromUrl, {
                 name: EventType.OpenFromUrl,
                 id: EventType.OpenFromUrl,
-                value: `${window.location.origin}/${val.url}`,
+                value: buildUrl(val.url),
             });
         },
         initFileDrag() {

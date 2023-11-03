@@ -29,6 +29,7 @@ export class GeometryReconstructor {
 
     private static set(geom: BufferGeometry, name: string, data: ArrayLike<number>, size: number) {
         if(data.length > 0) {
+            // @ts-ignore
             geom.setAttribute(name, new BufferAttribute(data, size));
         }
     }

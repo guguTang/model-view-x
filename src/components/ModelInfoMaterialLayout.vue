@@ -3,7 +3,7 @@
         <canvas class="map-canvas" ref="mapCanvas"></canvas>
         <canvas class="map-canvas" ref="mapCanvasCompress"></canvas>
         <el-collapse v-model="activeMaterialNames">
-            <el-collapse-item v-for="(val) in materials" :title="`材质(${val.name})`" :name="val.name">
+            <el-collapse-item v-for="(val, index) in materials" :title="`材质(${val.name})`" :name="val.name" :key="index">
                 <template #title>
                     <span :title="val.name" class="material-title">{{ val.name }}</span>
                     <!-- <el-icon class="header-icon">

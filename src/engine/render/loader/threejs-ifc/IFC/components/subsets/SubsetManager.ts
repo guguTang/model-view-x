@@ -19,12 +19,12 @@ export type Subsets = {
 export class SubsetManager {
     readonly items: ItemsMap;
     private readonly BVH: BvhManager;
-    private state: IfcState;
+    // private state: IfcState;
     private subsets: Subsets = {};
     private subsetCreator: SubsetCreator;
 
     constructor(state: IfcState, BVH: BvhManager) {
-        this.state = state;
+        // this.state = state;
         this.items = new ItemsMap(state);
         this.BVH = BVH;
         this.subsetCreator = new SubsetCreator(state, this.items, this.subsets, this.BVH);
