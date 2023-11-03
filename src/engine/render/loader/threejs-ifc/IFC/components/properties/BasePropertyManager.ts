@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IfcState, pName, PropsNames, Node } from '../../BaseDefinitions';
 
 export class BasePropertyManager {

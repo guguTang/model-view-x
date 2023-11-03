@@ -5,11 +5,11 @@ import { PropertyAPI } from './BaseDefinitions';
 
 export class JSONPropertyManager extends BasePropertyManager implements PropertyAPI {
 
-    async getItemProperties(modelID: number, id: number, recursive = false) {
+    async getItemProperties(modelID: number, id: number) {
         return { ...this.state.models[modelID].jsonData[id] };
     }
 
-    async getHeaderLine(modelID: number) {
+    async getHeaderLine() {
         return {};
     }
 

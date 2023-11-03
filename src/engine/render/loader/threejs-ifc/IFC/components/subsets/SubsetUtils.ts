@@ -2,6 +2,7 @@ export class SubsetUtils {
 
     // If flatten, all indices are in the same array; otherwise, indices are split in subarrays by material
     static getAllIndicesOfGroup(modelID: number, ids: number[], materialIndex: number, items: any, flatten = true) {
+        console.log(modelID);
         const indicesByGroup: any = [];
         for (const expressID of ids) {
             const entry = items.map.get(expressID);

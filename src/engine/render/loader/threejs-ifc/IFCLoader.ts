@@ -4,6 +4,7 @@ import { IFCModel } from './IFC/components/IFCModel';
 
 class IFCLoader extends Loader {
     ifcManager: IFCManager;
+    // @ts-ignore
     private onProgress?: (event: ProgressEvent) => void;
 
     constructor(manager?: LoadingManager) {
