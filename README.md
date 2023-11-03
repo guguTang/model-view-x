@@ -9,6 +9,8 @@
 ##### 预览界面
 ![image](images/model-show.png)
 
+[在线Demo](http://47.111.89.25/model-view/index.html)
+
 ## 安装依赖
 ```sh
 npm install
