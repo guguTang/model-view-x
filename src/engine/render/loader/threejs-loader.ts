@@ -84,6 +84,7 @@ export class THREESTLLoader extends THREELoader {
             loader.load(url, (geometry) => {
                 if (!geometry) {
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                    return;
                 }
 
                 const material = new MeshPhongMaterial({
@@ -119,21 +120,22 @@ export class THREEColladaLoader extends THREELoader {
         return new Promise<boolean>((resolve, reject) => {
             const loader = new ColladaLoader(this._loadingManager);
             loader.load(url, (object: Collada) => {
-                if (!object.scene) {
+                if (!object || !object.scene) {
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                } else {
+                    object.scene.traverse((child: Object3D) => {
+                        const mesh = child as Mesh;
+                        if (mesh.isMesh ) {
+                            // model does not have normals
+                            // @ts-ignore
+                            mesh.material.flatShading = true;
+                        }
+    
+                    } );
+                    this._object = object.scene;
+                    this._clips = object.scene.animations;
+                    resolve(true);
                 }
-                object.scene.traverse((child: Object3D) => {
-                    const mesh = child as Mesh;
-					if (mesh.isMesh ) {
-						// model does not have normals
-                        // @ts-ignore
-						mesh.material.flatShading = true;
-					}
-
-				} );
-                this._object = object.scene;
-                this._clips = object.scene.animations;
-                resolve(true);
             }, ()=>{}, (e) => {
                 reject(e);
             });
@@ -187,10 +189,11 @@ export class THREEOBJLoader extends THREELoader {
             objLoader.load(url, (object: any) => {
                 if (!object) {
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                } else {
+                    this._object = object;
+                    this._clips = object.animations;
+                    resolve(true);
                 }
-                this._object = object;
-                this._clips = object.animations;
-                resolve(true);
             }, ()=>{}, (e: any) => {
                 reject(e);
             });
@@ -211,10 +214,11 @@ export class THREEFBXLoader extends THREELoader {
                 if (!object) {
                     // throw new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.');
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                } else {
+                    this._object = object;
+                    this._clips = object.animations;
+                    resolve(true);
                 }
-                this._object = object;
-                this._clips = object.animations;
-                resolve(true);
             }, ()=>{}, (e) => {
                 reject(e);
             });
@@ -357,10 +361,11 @@ export class THREEGLTFLoader extends THREELoader {
                 if (!gltfScene) {
                     // throw new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.');
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                } else {
+                    this._object = gltfScene;
+                    this._clips = clips;
+                    resolve(true);
                 }
-                this._object = gltfScene;
-                this._clips = clips;
-                resolve(true);
             }, () =>{}, e => {
                 reject(e);
             });
@@ -404,9 +409,10 @@ export class THREEIFCLoader extends THREELoader {
                 if (!model) {
                     // throw new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.');
                     reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                } else {
+                    this._object = model;
+                    resolve(true);
                 }
-                this._object = model;
-                resolve(true);
             }, () =>{}, e => {
                 reject(e);
             });

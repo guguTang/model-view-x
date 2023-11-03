@@ -33,13 +33,13 @@ export default defineComponent({
     props: {
         width: {
             type: String,
-            require: true,
+            required: true,
             default: '100%',
         },
         selected: {
             type: String,
-            default: 0,
-            require: true,
+            default: '',
+            required: true,
         },
     },
     data() {

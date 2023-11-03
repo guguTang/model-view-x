@@ -39,7 +39,7 @@
 </template>
   
 <script lang="ts">
-import { ElContainer, ElHeader, ElMain, ElFooter, ElButton, ElCol, ElRow } from 'element-plus';
+import { ElCol, ElRow } from 'element-plus';
 import ToolBar from './ToolBar.vue';
 import LeftLayout from './LeftLayout.vue';
 import RightLayout from './RightLayout.vue';
@@ -64,7 +64,7 @@ export default defineComponent({
     name: 'MainLayout',
     components: {
         ToolBar, LeftLayout, RightLayout, MainLayoutMask,
-        ElContainer, ElHeader, ElMain, ElFooter, ElButton, ElCol, ElRow},
+        ElCol, ElRow},
     props: {
         
     },

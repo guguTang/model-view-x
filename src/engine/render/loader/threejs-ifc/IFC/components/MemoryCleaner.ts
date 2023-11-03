@@ -1,5 +1,5 @@
 import { IfcState } from '../BaseDefinitions';
-import { Material } from 'three';
+// import { Material } from 'three';
 
 export class MemoryCleaner {
     constructor(private state: IfcState) {

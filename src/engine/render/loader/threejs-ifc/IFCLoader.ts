@@ -1,5 +1,5 @@
 import { IFCManager } from './IFC/components/IFCManager';
-import {FileLoader, Loader, LoadingManager, Matrix4} from 'three';
+import {FileLoader, Loader, LoadingManager} from 'three';
 import { IFCModel } from './IFC/components/IFCModel';
 
 class IFCLoader extends Loader {
