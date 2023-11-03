@@ -81,7 +81,7 @@
     </div>
 </template>
 <script lang="ts">
-import { ElCol, ElRow, ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import OpenFromURL from './dialog/OpenFromURL.vue';
 import OpenFromLocal from './dialog/OpenFromLocal.vue';
 import Export from './dialog/Export.vue';
@@ -99,9 +99,7 @@ interface IBtnState {
 }
 export default defineComponent({
     name: 'ToolBar',
-    components: {
-        ElCol, ElRow
-    },
+    components: {},
     props: {
         alreayLoadOnce: {
             type: Boolean,

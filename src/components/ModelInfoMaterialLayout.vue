@@ -183,7 +183,7 @@
 import { GlobalBUS, EventType } from '@/engine/bus';
 import { TXEngine } from '@/engine/wrapper';
 import { defineComponent, ref, Ref } from 'vue';
-import MapImage from './model-info-material-layout/MapImage.vue';
+// import MapImage from './model-info-material-layout/MapImage.vue';
 import SubTitleLabel from './model-info-material-layout/SubTitleLabel.vue';
 import TextureItem from './model-info-material-layout/TextureItem.vue';
 import * as TX from '@/engine/model/material/index';
@@ -195,7 +195,7 @@ const mapCanvasCompress: Ref<HTMLCanvasElement | null> = ref(null);
 export default defineComponent({
     name: 'ModelInfoMaterialLayout',
     components: {
-        MapImage,
+        // MapImage,
         SubTitleLabel,
         TextureItem,
     },

@@ -277,7 +277,7 @@ export class RenderThreejs extends Render {
             if (this._gridHelper === null || force === true) {
                 this.removeGrid();
                 let divisions = 10;
-                let finalSize = 10;
+                let finalSize: number;
                 if (!size && this._content) {
                     const box = new Box3().setFromObject(this._content);
                     finalSize = box.getSize(new Vector3()).length();
@@ -439,7 +439,7 @@ export class RenderThreejs extends Render {
             const curNodeSimpleInfo: INodeSimpleInfo = {
                 id: mesh.id,
                 name: mesh.name || '',
-                isMesh: mesh?.isMesh || false,
+                isMesh: mesh.isMesh || false,
                 isGroup: (node as Group).isGroup || false,
                 children: [],
                 triangles,
@@ -563,10 +563,10 @@ export class RenderThreejs extends Render {
         if (clip) {
             let loopType: THREE.AnimationActionLoopStyles = THREE.LoopOnce;
             switch (type) {
-                case 'once': loopType = THREE.LoopOnce; break;
+                // case 'once': loopType = THREE.LoopOnce; break;
                 case 'repeat': loopType = THREE.LoopRepeat; break;
                 case 'pingpong': loopType = THREE.LoopPingPong; break;
-                case 'reverse':  loopType = THREE.LoopOnce; break;
+                // case 'reverse':  loopType = THREE.LoopOnce; break;
                 default: break;
             }
             const action = this._mixer?.clipAction(clip);
