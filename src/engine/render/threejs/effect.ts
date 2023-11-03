@@ -87,6 +87,28 @@ export default class THREEEffect {
         this.configOutlinePass();
     }
 
+    public get composerRenderer(): WebGLRenderer {
+        return this._composer.renderer;
+    }
+
+    public get enablePass(): boolean {
+        return this._enablePass;
+    }
+
+    public OnResize(width: number, height: number) {
+        this._fxaaPass.uniforms.resolution.value.set(1 / width, 1 / height);
+        this._smaaPass.setSize(width, height);
+        this._composer.setSize(width, height);
+    }
+
+    public OnUpdate() {
+        if (this._enablePass) {
+            this._composer.render();
+        }
+        // this._vertexNormalHelperObjs.forEach(it => it.update());
+        this._normalObjectMap.forEach(it => it.update());
+    }
+
     public Clear() {
         this._normalObjectMap.forEach(it => this._scene.remove(it));
         this._boundingboxObjectMap.forEach(it => this._scene.remove(it));
@@ -164,24 +186,6 @@ export default class THREEEffect {
         
         this._outlinePass.downSampleRatio = 1 // 边框弯曲度
         // this._outlinePass.clear = true;
-    }
-
-    public OnResize(width: number, height: number) {
-        this._fxaaPass.uniforms.resolution.value.set(1 / width, 1 / height);
-        this._smaaPass.setSize(width, height);
-        this._composer.setSize(width, height);
-    }
-
-    public get enablePass(): boolean {
-        return this._enablePass;
-    }
-
-    public OnUpdate() {
-        if (this._enablePass) {
-            this._composer.render();
-        }
-        // this._vertexNormalHelperObjs.forEach(it => it.update());
-        this._normalObjectMap.forEach(it => it.update());
     }
 
     public AddOutline(node: Object3D) {

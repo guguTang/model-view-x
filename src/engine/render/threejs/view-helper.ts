@@ -14,15 +14,11 @@ export class THREEViewHelper {
     constructor(camera: THREE.Camera, container: HTMLElement, renderer: THREE.WebGLRenderer) {
         this._isShow = true;
         this._renderer = renderer;
-        this._renderer.autoClear = false;
         this._viewHeler = new ViewHelper(camera, container);
     }
 
     public Show(mark: boolean): boolean {
         this._isShow = mark;
-        if (mark === false) {
-            // this._axesRenderer.clear();
-        }
         return true;
     }
 

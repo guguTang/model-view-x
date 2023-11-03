@@ -5,6 +5,7 @@ import { LoaderUtils } from 'three';
 import DataTransfer from '@/engine/data/transfer';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { IFCLoader } from './threejs-ifc/IFCLoader';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { OBJLoader } from './threejs-obj-loader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
@@ -14,6 +15,8 @@ import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { ImporterOBJ } from '../../import/index';
+import { IFCModel } from './threejs-ifc/IFC/components/IFCModel';
+// import { IFCSPACE } from 'web-ifc';
 const MANAGER: LoadingManager = new LoadingManager();
 
 export abstract class THREELoader extends SceneLoader {
@@ -365,6 +368,52 @@ export class THREEGLTFLoader extends THREELoader {
     }
 }
 
+// ===================IFC Loader==============================
+import {acceleratedRaycast, computeBoundsTree, disposeBoundsTree} from 'three-mesh-bvh';
+export class THREEIFCLoader extends THREELoader {
+    private _ifcLoader: IFCLoader;
+    constructor(opts: LoaderOpts) {
+        super(opts);
+        this._ifcLoader = new IFCLoader(this._loadingManager);
+        this.setupThreeMeshBVH();
+    }
+
+    public Clean(): void {
+        super.Clean();
+        // this._ifcLoader.ifcManager.dispose();
+    }
+
+    private setupThreeMeshBVH() {
+        this._ifcLoader.ifcManager.setupThreeMeshBVH(
+            computeBoundsTree,
+            disposeBoundsTree,
+            acceleratedRaycast
+        );
+    }
+
+    public async LoadFromURL(url: string): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
+            await this._ifcLoader.ifcManager.setWasmPath('vendor/web-ifc/0.0.44/');
+            // await loader.ifcManager.parser.setupOptionalCategories( {
+            //     [ IFCSPACE ]: false,
+            // });
+            await this._ifcLoader.ifcManager.applyWebIfcConfig( {
+                USE_FAST_BOOLS: true
+            });
+            this._ifcLoader.load(url, (model: IFCModel) => {
+                if (!model) {
+                    // throw new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.');
+                    reject(new Error('This model contains no scene, and cannot be viewed here. However, it may contain individual 3D resources.'));
+                }
+                this._object = model;
+                resolve(true);
+            }, () =>{}, e => {
+                reject(e);
+            });
+        });
+    }
+}
+
 export const factoryCreateLoaderForTHREE = (opts: LoaderOpts): SceneLoader | null => {
     let ins: SceneLoader | null = null;
     let modelType: ModelType = ModelType.NONE;
@@ -378,21 +427,30 @@ export const factoryCreateLoaderForTHREE = (opts: LoaderOpts): SceneLoader | nul
     }
     try {
         switch(modelType) {
-            case ModelType.GLTF:
+            case ModelType.GLTF: {
                 ins = new THREEGLTFLoader(opts);
                 break;
-            case ModelType.FBX:
+            }
+            case ModelType.FBX: {
                 ins = new THREEFBXLoader(opts);
                 break;
-            case ModelType.OBJ:
+            }
+            case ModelType.OBJ: {
                 ins = new THREEOBJLoader(opts);
                 break;
-            case ModelType.STL:
+            }
+            case ModelType.STL: {
                 ins = new THREESTLLoader(opts);
                 break;
-            case ModelType.DAE:
+            }
+            case ModelType.DAE: {
                 ins = new THREEColladaLoader(opts);
                 break;
+            }
+            case ModelType.IFC: {
+                ins = new THREEIFCLoader(opts);
+                break;
+            }
         }
     } catch (error: any) {
         console.error(error.toString());

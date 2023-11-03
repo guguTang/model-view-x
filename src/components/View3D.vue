@@ -73,11 +73,15 @@ export default defineComponent({
                         fullscreen: false,
                         lock: true,
                     });
+                    // const rv = await TXEngine.Load({
+                    //     type: LoaderType.Folder,
+                    //     folder: fileIns,
+                    // }).catch(e => {
+                    //     ElMessage.error(e.toString());
+                    // });
                     const rv = await TXEngine.Load({
                         type: LoaderType.Folder,
                         folder: fileIns,
-                    }).catch(e => {
-                        ElMessage.error(e.toString());
                     });
                     loadingIns.close();
                     if (rv === false) {

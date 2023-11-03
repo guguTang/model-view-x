@@ -82,6 +82,7 @@ export class RenderThreejs extends Render {
 
         // init renderer
         this._renderer = new WebGLRenderer({ antialias: true });
+        this._renderer.autoClear = false;
         this._renderer.useLegacyLights = false;
         this._renderer.setClearColor(0xcccccc);
         this._renderer.setPixelRatio(window.devicePixelRatio);
@@ -316,9 +317,9 @@ export class RenderThreejs extends Render {
         if (this._effectManager.enablePass === false) {
             this._renderer.render(this._scene, this._activeCamera);
         }
-        this._viewHelper?.OnUpdate(dt);
         this._axesCornerHelper?.OnUpdate();
         this._effectManager.OnUpdate();
+        this._viewHelper?.OnUpdate(dt);
     }
 
     private setContent(object: Group, clips: Array<AnimationClip>) {
@@ -630,8 +631,9 @@ export class RenderThreejs extends Render {
     // 显示小的坐标轴辅助
     public ShowMinAxes(mark: boolean): boolean {
         this._state.minAxes = mark;
-        if (!this._axesCornerHelper) return false;
-        return this._axesCornerHelper.Show(mark);
+        if (this._viewHelper) return this._viewHelper.Show(mark);
+        if (this._axesCornerHelper) return this._axesCornerHelper.Show(mark);
+        return false
     }
 
     // 自动旋转

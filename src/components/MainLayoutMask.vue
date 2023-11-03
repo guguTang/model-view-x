@@ -9,8 +9,8 @@
                     <span style="font-size: 30px;">拖拽或打开模型进行预览</span>
                 </div>
                 <el-divider content-position="right">下列是示例模型，可点击预览</el-divider>
-                <el-row v-for="(val) in sampleList" :gutter="4" style="margin-top: 12px;">
-                    <el-col v-for="(cur) in val" :span="Math.ceil(24/val.length)">
+                <el-row v-for="(val) in sampleList" :gutter="4" style="margin-top: 12px;" :key="val">
+                    <el-col v-for="(cur) in val" :span="Math.ceil(24/val.length)" :key="cur">
                         <el-tag type="success" size="large" style="cursor: pointer;" @click="handleClickSample(cur)">
                             {{ cur.text }}
                         </el-tag>
@@ -64,6 +64,14 @@ export default defineComponent({
                 {
                     text: 'DAE',
                     url: 'resource/models/dae/elf/elf.dae',
+                }],
+                [{
+                    text: 'IFC',
+                    url: 'resource/models/ifc/test.ifc',
+                },
+                {
+                    text: 'IFC（官方）',
+                    url: 'resource/models/ifc/rac_advanced_sample_project.ifc',
                 }]
             ],
         };
