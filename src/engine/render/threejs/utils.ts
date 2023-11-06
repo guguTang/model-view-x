@@ -1,7 +1,7 @@
 import { Material, Mesh, MeshBasicMaterial, Object3D } from 'three';
 
 export type materialCallback = (material: MeshBasicMaterial | Material, node?: Object3D) => boolean;
-export type nodeCallback = (node: Object3D | Mesh, materialList?: Array<Material>) => boolean;
+export type nodeCallback = (node: Object3D | Mesh, materialList: Array<Material>) => boolean;
 export class THREEUtils {
     public static TraverseMaterials(object: Object3D, callback: materialCallback) {
         object.traverse((node: Object3D) => {
