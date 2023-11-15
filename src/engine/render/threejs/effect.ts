@@ -12,7 +12,7 @@ import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 // import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { THREEUtils } from './utils';
-
+const defaultMaterial = new MeshBasicMaterial({ color: 0x0F52BA, opacity: 0.8, transparent: true });
 export default class THREEEffect {
     private _el: HTMLElement;
     private _renderer: WebGLRenderer;
@@ -34,6 +34,8 @@ export default class THREEEffect {
     private _boundingboxObjectMap: Map<number, BoxHelper> = new Map<number, BoxHelper>();
     //     outline
     private _outlineObjectList: Array<Object3D> = [];
+    //     origin material
+    private _originMaterialMap: Map<Object3D, Array<Material>> = new Map<Object3D, Array<Material>>();
     
     constructor(el: HTMLElement, renderer: WebGLRenderer, scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
         this._el = el;
@@ -197,6 +199,7 @@ export default class THREEEffect {
                 linewidth: 100,
             }));
             outline.material.depthWrite = false;
+            // outline.scale.multiplyScalar(1.05);
             curNode.add(outline);
             this._outlineObjectList.push(curNode);
             return true;
@@ -271,13 +274,55 @@ export default class THREEEffect {
         }
     }
 
+    public SetDefaultMaterial(node: Object3D) {
+        THREEUtils.TraverseNodes(node, (curNode: Object3D| Mesh, materials: Array<Material>): boolean => {
+            const curMesh = curNode as Mesh;
+            if (curMesh.isMesh) {
+                this._originMaterialMap.set(curMesh, materials);
+                curMesh.material = defaultMaterial;
+            }
+            return true;
+        }, true);
+    }
+
+    private setOriginMaterial(node: Object3D) {
+        THREEUtils.TraverseNodes(node, (curNode: Object3D| Mesh, materials?: Array<Material>): boolean => {
+            const curMesh = curNode as Mesh;
+            if (curMesh.isMesh) {
+                const originMaterials = this._originMaterialMap.get(curMesh);
+                if (originMaterials) {
+                    if (originMaterials.length > 0) {
+                        if (originMaterials.length === 1) {
+                            curMesh.material = originMaterials[0];
+                        } else {
+                            curMesh.material = originMaterials;
+                        }
+                    }
+                }
+            }
+            return true;
+        }, true);
+    }
+
+    public RemoveDefaultMaterial(node?: Object3D) {
+        let finalNodes: Array<Object3D> = [];
+        if (node) {
+            finalNodes = [node];
+        } else {
+            this._originMaterialMap.forEach((val, key) => finalNodes.push(key));
+        }
+        finalNodes.forEach(cur => this.setOriginMaterial(cur));
+    }
+
     public Select(node: Object3D) {
-        // this.AddOutline(node);
         this.AddOutlinePass(node);
+        // this.AddOutline(node);
+        // this.SetDefaultMaterial(node);
     }
 
     public UnSelect(node?: Object3D) {
-        // this.RemoveOutline(node);
         this.RemoveOutlinePass(node);
+        // this.RemoveOutline(node);
+        // this.RemoveDefaultMaterial(node);
     }
 };

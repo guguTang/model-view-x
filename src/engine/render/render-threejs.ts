@@ -360,6 +360,7 @@ export class RenderThreejs extends Render {
         // @ts-ignore
         window.globalobj = object;
 
+        /*
         this._content.traverse((node: Object3D) => {
             const mesh = node as Mesh;
             if ((node as Light).isLight) {
@@ -370,14 +371,41 @@ export class RenderThreejs extends Render {
               materials.forEach(it => it.depthWrite = !it.transparent);
             }
         });
-
+        */
+        this.preprocessData();
         this.setClips(clips);
         this.setNodeTree();
-        this.setOriginInfo();
+        // this.setOriginInfo();
         this.SetDoubleSide(this._state.doubleSide, true);
 
         this.updateLights();
         this.updateGrid(size, true);
+    }
+
+    private preprocessData() {
+        this._originNodeMaterialMap.clear(); // 所有原始材质
+        if (this._content) {
+            THREEUtils.TraverseNodes(this._content, (curNode: Object3D, materials: Array<Material>): boolean => {
+                const mesh = curNode as Mesh;
+                const light = curNode as Light;
+                if (mesh.isMesh) {
+                    const cloneMaterials = materials.map(it => it.clone());
+                    if (cloneMaterials.length > 0) {
+                        if (cloneMaterials.length === 1) {
+                            mesh.material = cloneMaterials[0];
+                        } else {
+                            mesh.material = cloneMaterials;
+                        }
+                    }
+                    // TODO(https://github.com/mrdoob/three.js/pull/18235): Clean up.
+                    cloneMaterials.forEach(it => it.depthWrite = !it.transparent);
+                    this._originNodeMaterialMap.set(mesh.id, cloneMaterials);
+                } else if (light.isLight) {
+                    this._config.punctualLights = false;
+                }
+                return true;
+            }, false);
+        }
     }
 
     private fitNode(node: Object3D, withTween: boolean = false): void {
@@ -405,20 +433,6 @@ export class RenderThreejs extends Render {
             return this._content;
         }
         return this._content.getObjectById(nodeID) || null;
-    }
-
-    private setOriginInfo() {
-        this._originNodeMaterialMap.clear();
-        if (this._content) {
-            this._content.traverse(it => {
-                const mesh = it as Mesh;
-                let materials: Array<Material> = [];
-                if (mesh.isMesh && mesh.material) {
-                    Array.isArray(mesh.material) ? materials = mesh.material : materials = [mesh.material];
-                }
-                this._originNodeMaterialMap.set(mesh.id, materials);
-            });
-        }
     }
 
     private setNodeTree() {
