@@ -9,7 +9,7 @@
 ##### 预览界面
 ![image](images/model-show.png)
 
-[在线Demo](http://www.txclub.site/model-view/index.html)
+[在线Demo](https://www.txclub.site/model-view/index.html)
 
 ## 安装依赖
 ```sh
